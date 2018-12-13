@@ -52,37 +52,43 @@ void HTTPWorker::read_request() {
     });
 }
 
+unique_ptr<BaseHandler> HTTPWorker::find_route(string path) {
+    auto found_route = application_routes.find(path);
+    if (found_route != application_routes.end()) {
+        return unique_ptr<BaseHandler>(found_route->second());
+    }
+    return nullptr;
+}
+
 void HTTPWorker::process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req) {
     cout << req.target() << endl;
-    HTTPRequest * req_data = new HTTPRequest(req);
+    HTTPRequest req_data(req);
     
-    BaseHandler * route_handler;
+    std::unique_ptr<BaseHandler> found_handler(find_route(req_data.path));
     
-    auto found_route = application_routes.find(req_data->path);
-    if (found_route == application_routes.end()) {
-        route_handler = new BaseHandler;
-    } else {
-        route_handler = found_route->second();
+    if (found_handler == nullptr) {
+        send_bad_response(http::int_to_status(404), "Route not found");
+        return;
     }
     
     switch (req.method()) {
         case http::verb::head:
-            route_handler->head(*req_data);
+            found_handler->head(req_data);
             break;
         case http::verb::options:
-            route_handler->options(*req_data);
+            found_handler->options(req_data);
             break;
         case http::verb::get:
-            route_handler->get(*req_data);
+            found_handler->get(req_data);
             break;
         case http::verb::post:
-            route_handler->post(*req_data);
+            found_handler->post(req_data);
             break;
         case http::verb::put:
-            route_handler->put(*req_data);
+            found_handler->put(req_data);
             break;
         case http::verb::delete_:
-            route_handler->delete_(*req_data);
+            found_handler->delete_(req_data);
             break;
             
         default:
@@ -93,17 +99,17 @@ void HTTPWorker::process_request(http::request<request_body_t, http::basic_field
     
     // TODO: swap out string response for empty response if empty_body flag is set
     string_response_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    string_response_->result(route_handler->response.status);
+    string_response_->result(found_handler->response.status);
     
     string_response_->set(http::field::server, "Audio Tool API");
-    string_response_->set(http::field::content_type, route_handler->response.content_type);
+    string_response_->set(http::field::content_type, found_handler->response.content_type);
     
     // Set any headers
-    for(auto header : route_handler->response.headers){
+    for(auto header : found_handler->response.headers){
         string_response_->set(header.first, header.second);
     }
     
-    string_response_->body() = route_handler->response.body;
+    string_response_->body() = found_handler->response.body;
     string_response_->prepare_payload();
     
     string_serializer_.emplace(*string_response_);

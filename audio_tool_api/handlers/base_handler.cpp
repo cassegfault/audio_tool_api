@@ -15,6 +15,7 @@ BaseHandler::BaseHandler () {
     response.status = 200;
     response.content_type = "application/json";
     response.empty_body = false;
+    response.headers.emplace("Access-Control-Allow-Origin","*");
     
 }
 

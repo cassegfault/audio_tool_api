@@ -15,6 +15,7 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <string>
+#include <vector>
 #include "fields_alloc.h"
 #include "multipart_parser.h"
 
@@ -34,32 +35,17 @@ public:
     http::verb verb;
     http::request<request_body_t, http::basic_fields<alloc_t>> const& _req;
     
-    int CountHeaders(const std::string& body) {
-        multipart_parser_execute(m_parser, body.c_str(), body.size());
-     
-        return m_headers;
-    }
+    vector<string> files;
     
 private:
-    static int ReadHeaderName(multipart_parser* p, const char *at, size_t length) {
-        HTTPRequest* me = (HTTPRequest*)multipart_parser_get_data(p);
-        string datastr ((char *)at, length);
-        cout << "Header Name " << datastr << endl;
-        me->m_headers++;
-        return me->m_headers;
-    }
-    static int ReadHeaderValue(multipart_parser* p, const char *at, size_t length) {
-        HTTPRequest* me = (HTTPRequest*)multipart_parser_get_data(p);
-        me->m_headers++;
-        return me->m_headers;
-    }
-    
     string not_found_response = "404 Route not found";
     int not_found_status = 404;
     
     multipart_parser* m_parser;
     multipart_parser_settings m_callbacks;
-    int m_headers;
+    int current_file_index = 0;
+    string current_file_data;
+    
     
 };
 

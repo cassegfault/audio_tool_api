@@ -80,6 +80,8 @@ private:
     void send_bad_response(http::status status, std::string const& error);
     
     void check_deadline();
+    
+    unique_ptr<BaseHandler> find_route(string path);
 };
 
 #endif /* http_worker_h */

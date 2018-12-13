@@ -13,28 +13,25 @@ void AudioProcessor::execute(){
     int ret = AVERROR_EXIT;
     
     /* Open the input file for reading. */
-    if (open_input_file(&input_format_context,
-                        &input_codec_context))
+    if (open_input_file())
         goto cleanup;
     /* Open the output file for writing. */
-    if (open_output_file(input_codec_context,
-                         &output_format_context, &output_codec_context))
+    if (open_output_file())
         goto cleanup;
     /* Initialize the resampler to be able to convert audio sample formats. */
-    if (init_resampler(input_codec_context, output_codec_context,
-                       &resample_context))
+    if (init_resampler())
         goto cleanup;
     /* Initialize the FIFO buffer to store audio samples to be encoded. */
-    if (init_fifo(&fifo, output_codec_context))
+    if (init_fifo())
         goto cleanup;
     /* Write the header of the output file container. */
-    if (write_output_file_header(output_format_context))
+    if (write_output_file_header())
         goto cleanup;
     /* Loop as long as we have input samples to read or output samples
      * to write; abort as soon as we have neither. */
     while (1) {
         /* Use the encoder's desired frame size for processing. */
-        const int output_frame_size = output_codec_context->frame_size;
+        const int output_frame_size = 1024 * 1024 * 20;//output_codec_context->frame_size;
         int finished                = 0;
         /* Make sure that there is one frame worth of samples in the FIFO
          * buffer so that the encoder can do its work.
@@ -44,10 +41,7 @@ void AudioProcessor::execute(){
         while (av_audio_fifo_size(fifo) < output_frame_size) {
             /* Decode one frame worth of audio samples, convert it to the
              * output sample format and put it into the FIFO buffer. */
-            if (read_decode_convert_and_store(fifo, input_format_context,
-                                              input_codec_context,
-                                              output_codec_context,
-                                              resample_context, &finished))
+            if (read_decode_convert_and_store(&finished))
                 goto cleanup;
             /* If we are at the end of the input file, we continue
              * encoding the remaining audio samples to the output file. */
@@ -61,8 +55,7 @@ void AudioProcessor::execute(){
                (finished && av_audio_fifo_size(fifo) > 0))
         /* Take one frame worth of audio samples from the FIFO buffer,
          * encode it and write it to the output file. */
-            if (load_encode_and_write(fifo, output_format_context,
-                                      output_codec_context))
+            if (load_encode_and_write())
                 goto cleanup;
         /* If we are at the end of the input file and have encoded
          * all remaining samples, we can exit this loop and finish. */
@@ -71,39 +64,52 @@ void AudioProcessor::execute(){
             /* Flush the encoder as it may have delayed frames. */
             do {
                 data_written = 0;
-                if (encode_audio_frame(NULL, output_format_context,
-                                       output_codec_context, &data_written))
+                if (encode_audio_frame(NULL, &data_written))
                     goto cleanup;
             } while (data_written);
             break;
         }
     }
     /* Write the trailer of the output file container. */
-    if (write_output_file_trailer(output_format_context))
+    if (write_output_file_trailer())
         goto cleanup;
+    cout << this->obd.size << endl;
     ret = 0;
 cleanup:
+    cout << "Execute cleanup" << endl;
+    
     if (fifo)
         av_audio_fifo_free(fifo);
     swr_free(&resample_context);
     if (output_codec_context)
         avcodec_free_context(&output_codec_context);
-    if (output_format_context) {
-        avio_closep(&output_format_context->pb);
-        avformat_free_context(output_format_context);
-    }
     if (input_codec_context)
         avcodec_free_context(&input_codec_context);
     if (input_format_context)
         avformat_close_input(&input_format_context);
+    
+}
+AudioProcessor::~AudioProcessor(){
+    //av_freep(input_buffer);
+    //av_free(output_buffer);
+    //input_buffer = nullptr;
+    //output_buffer = nullptr;
+    /*obd.buf = obd.ptr = nullptr;
+    ibd.ptr = nullptr;*/
+    //av_freep(obd.ptr);
+    //av_freep(obd.buf);
+    //av_freep(output_buffer);
+    //av_freep(input_buffer);
+    //delete input_buffer;
+    cout << "Processor Destructed" << endl;
 }
 
 int AudioProcessor::read_packet(void *opaque, uint8_t *buf, int buf_size){
-    struct buffer_data *bd = (struct buffer_data *)opaque;
+    struct input_buffer_data *bd = (struct input_buffer_data *)opaque;
     buf_size = fmin(buf_size, bd->size);
     if (!buf_size)
         return AVERROR_EOF;
-    printf("ptr:%p size:%zu\n", bd->ptr, bd->size);
+    //printf("ptr:%p size:%zu\n", bd->ptr, bd->size);
     /* copy internal buffer data to buf */
     memcpy(buf, bd->ptr, buf_size);
     bd->ptr  += buf_size;
@@ -112,25 +118,33 @@ int AudioProcessor::read_packet(void *opaque, uint8_t *buf, int buf_size){
 }
 
 int AudioProcessor::write_packet(void *opaque, uint8_t *buf, int buf_size){
-    struct buffer_data *bd = (struct buffer_data *)opaque;
+    struct output_buffer_data *bd = (struct output_buffer_data *)opaque;
+    while (buf_size > bd->room) {
+        int64_t offset = bd->ptr - bd->buf.get();
+        uint8_t * tmp = (uint8_t*)malloc(2 * bd->size);
+        memcpy(tmp, bd->buf.get(), bd->size);
+        bd->buf.reset(tmp);
+        if (!bd->buf)
+                return AVERROR(ENOMEM);
+        bd->size *= 2;
+        bd->ptr = bd->buf.get() + offset;
+        bd->room = bd->size - offset;
+    }
     buf_size = fmin(buf_size, bd->size);
-    if (!buf_size)
-        return AVERROR_EOF;
-    printf("ptr:%p size:%zu\n", bd->ptr, bd->size);
     memcpy(bd->ptr, buf, buf_size);
     bd->ptr  += buf_size;
-    bd->size -= buf_size;
-    return buf_size;
+    bd->room -= buf_size;
+    return 0;
 }
 
 
-void AudioProcessor::set_input_content(void * data, size_t size) {
-    this->input_buffer = (uint8_t *)data;
+void AudioProcessor::set_input_content(uint8_t * data, size_t size) {
+    this->input_buffer = data;
     this->input_buffer_size = size;
 }
 
 string AudioProcessor::get_output_content(){
-    return string((const char *)this->output_buffer, this->output_buffer_size);
+    return string((const char *)this->obd.buf.get(), this->obd.size);
 }
 
 int AudioProcessor::open_input_file()
@@ -141,62 +155,104 @@ int AudioProcessor::open_input_file()
     int error;
     uint8_t *avio_ctx_buffer = NULL;
     int avio_ctx_buffer_size = 4096;
-    struct buffer_data bd = { 0 };
-    bd.ptr  = input_buffer;
-    bd.size = input_buffer_size;
+    int stream_number;
+    //ibd.ptr.reset((uint8_t *)input_buffer.get());
+    ibd.ptr = (uint8_t *) input_buffer;
+    ibd.size = input_buffer_size;
+    
+    if (!(input_format_context = avformat_alloc_context())) {
+        error = AVERROR(ENOMEM);
+        return error;
+    }
     
     avio_ctx_buffer = (uint8_t *)av_malloc(avio_ctx_buffer_size);
     if (!avio_ctx_buffer) {
         error = AVERROR(ENOMEM);
         return error;
     }
-    avio_ctx = avio_alloc_context(avio_ctx_buffer, avio_ctx_buffer_size, 0, &bd, &AudioProcessor::read_packet, NULL, NULL);
+    avio_ctx = avio_alloc_context(avio_ctx_buffer, avio_ctx_buffer_size, 0, &ibd, &AudioProcessor::read_packet, NULL, NULL);
     if (!avio_ctx) {
         error = AVERROR(ENOMEM);
         return error;
     }
-    cout << (*input_format_context)->url << endl;
-    (*input_format_context)->pb = avio_ctx;
+    input_format_context->pb = avio_ctx;
     
     
     
-    error = avformat_open_input(input_format_context, NULL, NULL, NULL);
+    error = avformat_open_input(&input_format_context, NULL, NULL, NULL);
     if (error < 0) {
         fprintf(stderr, "Could not open input\n");
         return error;
     }
     
     /* Get information on the input file (number of streams etc.). */
-    if ((error = avformat_find_stream_info(*input_format_context, NULL)) < 0) {
+    if ((error = avformat_find_stream_info(input_format_context, NULL)) < 0) {
         fprintf(stderr, "Could not open find stream info (error '%s')\n",
                 av_err2str(error));
-        avformat_close_input(input_format_context);
+        avformat_close_input(&input_format_context);
         return error;
     }
-    /* Make sure that there is only one stream in the input file. */
-    if ((*input_format_context)->nb_streams != 1) {
-        fprintf(stderr, "Expected one audio input stream, but found %d\n",
-                (*input_format_context)->nb_streams);
-        avformat_close_input(input_format_context);
-        return AVERROR_EXIT;
+    /* select the audio stream */
+    stream_number = -1;
+    int audio_stream_count = 0;
+    for(int i=0; i < input_format_context->nb_streams; i++) {
+        if(input_format_context->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+            audio_stream_count++;
+            stream_number = i;
+            //break;
+        } else {
+            cout << "Stream found: ";
+            switch(input_format_context->streams[i]->codec->codec_type){
+                case AVMEDIA_TYPE_NB:
+                    cout << "NB";
+                    break;
+                case AVMEDIA_TYPE_DATA:
+                    cout << "DATA";
+                    break;
+                case AVMEDIA_TYPE_VIDEO:
+                    cout << "VIDEO";
+                    break;
+                case AVMEDIA_TYPE_UNKNOWN:
+                    cout << "??";
+                    break;
+                case AVMEDIA_TYPE_SUBTITLE:
+                    cout << "SUBTITLE";
+                    break;
+                case AVMEDIA_TYPE_ATTACHMENT:
+                    cout << "ATTACHMENT";
+                    break;
+                default:
+                    break;
+            }
+            cout << endl;
+
+        }
     }
+    cout << "Found " << audio_stream_count << " / " << input_format_context->nb_streams << " Audio Streams" << endl;
+    /*error = av_find_best_stream(input_format_context, AVMEDIA_TYPE_AUDIO, -1, -1, &input_codec, 0);
+    if (error < 0) {
+        av_log(NULL, AV_LOG_ERROR, "Cannot find an audio stream in the input file\n");
+        return error;
+    }
+     */
+    stream_number = error;
     /* Find a decoder for the audio stream. */
-    if (!(input_codec = avcodec_find_decoder((*input_format_context)->streams[0]->codecpar->codec_id))) {
+    if (!(input_codec = avcodec_find_decoder(input_format_context->streams[stream_number]->codecpar->codec_id))) {
         fprintf(stderr, "Could not find input codec\n");
-        avformat_close_input(input_format_context);
+        avformat_close_input(&input_format_context);
         return AVERROR_EXIT;
     }
     /* Allocate a new decoding context. */
     avctx = avcodec_alloc_context3(input_codec);
     if (!avctx) {
         fprintf(stderr, "Could not allocate a decoding context\n");
-        avformat_close_input(input_format_context);
+        avformat_close_input(&input_format_context);
         return AVERROR(ENOMEM);
     }
     /* Initialize the stream parameters with demuxer information. */
-    error = avcodec_parameters_to_context(avctx, (*input_format_context)->streams[0]->codecpar);
+    error = avcodec_parameters_to_context(avctx, input_format_context->streams[stream_number]->codecpar);
     if (error < 0) {
-        avformat_close_input(input_format_context);
+        avformat_close_input(&input_format_context);
         avcodec_free_context(&avctx);
         return error;
     }
@@ -205,69 +261,64 @@ int AudioProcessor::open_input_file()
         fprintf(stderr, "Could not open input codec (error '%s')\n",
                 av_err2str(error));
         avcodec_free_context(&avctx);
-        avformat_close_input(input_format_context);
+        avformat_close_input(&input_format_context);
         return error;
     }
     /* Save the decoder context for easier access later. */
-    *input_codec_context = avctx;
+    input_codec_context = avctx;
     return 0;
 }
 /**
  * Open an output file and the required encoder.
  * Also set some basic encoder parameters.
  * Some of these parameters are based on the input file's parameters.
- * @param      filename              File to be opened
- * @param      input_codec_context   Codec context of input file
- * @param[out] output_format_context Format context of output file
- * @param[out] output_codec_context  Codec context of output file
  * @return Error code (0 if successful)
  */
-int AudioProcessor::open_output_file(AVCodecContext *input_codec_context,
-                                     AVFormatContext **output_format_context,
-                                     AVCodecContext **output_codec_context)
+int AudioProcessor::open_output_file()
 {
     AVCodecContext *avctx          = NULL;
     AVIOContext *output_io_context = NULL;
     AVStream *stream               = NULL;
     AVCodec *output_codec          = NULL;
-    int error;
+    int error = 0;
     uint8_t *avio_ctx_buffer = NULL;
-    size_t avio_ctx_buffer_size = 4096;
-    struct buffer_data bd = { 0 };
-    bd.ptr  = output_buffer;
-    bd.size = output_buffer_size;
+    int avio_ctx_buffer_size = 4096;
+    //output_buffer = (uint8_t *)av_malloc(output_buffer_size);
+    obd.buf.reset((uint8_t *)av_malloc(output_buffer_size));
+    obd.ptr = obd.buf.get();
+    obd.size = obd.room = output_buffer_size;
     
     avio_ctx_buffer = (uint8_t *)av_malloc(avio_ctx_buffer_size);
     if (!avio_ctx_buffer) {
         error = AVERROR(ENOMEM);
         return error;
     }
-    output_io_context = avio_alloc_context(avio_ctx_buffer, avio_ctx_buffer_size, 0, &bd, &write_packet, NULL, NULL);
+    output_io_context = avio_alloc_context(avio_ctx_buffer, avio_ctx_buffer_size, 1, &obd, NULL, &write_packet, NULL);
     if (!output_io_context) {
         error = AVERROR(ENOMEM);
         return error;
     }
     
     /* Create a new format context for the output container format. */
-    if (!(*output_format_context = avformat_alloc_context())) {
+    if (!(output_format_context = avformat_alloc_context())) {
         fprintf(stderr, "Could not allocate output format context\n");
         return AVERROR(ENOMEM);
     }
     /* Associate the output file (pointer) with the container format context. */
-    (*output_format_context)->pb = output_io_context;
+    output_format_context->pb = output_io_context;
     /* Guess the desired container format based on the file extension. */
-    if (!((*output_format_context)->oformat = av_guess_format("wav", NULL,
+    if (!(output_format_context->oformat = av_guess_format("wav", NULL,
                                                               NULL))) {
         fprintf(stderr, "Could not find output file format\n");
         goto cleanup;
     }
     /* Find the encoder to be used by its name. */
-    if (!(output_codec = avcodec_find_encoder(AV_CODEC_ID_AAC))) {
-        fprintf(stderr, "Could not find an AAC encoder.\n");
+    if (!(output_codec = avcodec_find_encoder(AV_CODEC_ID_PCM_F32LE))) {
+        fprintf(stderr, "Could not find an 32Bit Floating Point PCM encoder.\n");
         goto cleanup;
     }
     /* Create a new audio stream in the output file container. */
-    if (!(stream = avformat_new_stream(*output_format_context, NULL))) {
+    if (!(stream = avformat_new_stream(output_format_context, NULL))) {
         fprintf(stderr, "Could not create new stream\n");
         error = AVERROR(ENOMEM);
         goto cleanup;
@@ -292,7 +343,7 @@ int AudioProcessor::open_output_file(AVCodecContext *input_codec_context,
     stream->time_base.num = 1;
     /* Some container formats (like MP4) require global headers to be present.
      * Mark the encoder so that it behaves accordingly. */
-    if ((*output_format_context)->oformat->flags & AVFMT_GLOBALHEADER)
+    if (output_format_context->oformat->flags & AVFMT_GLOBALHEADER)
         avctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
     /* Open the encoder for the audio stream to use it later. */
     if ((error = avcodec_open2(avctx, output_codec, NULL)) < 0) {
@@ -306,13 +357,13 @@ int AudioProcessor::open_output_file(AVCodecContext *input_codec_context,
         goto cleanup;
     }
     /* Save the encoder context for easier access later. */
-    *output_codec_context = avctx;
+    output_codec_context = avctx;
     return 0;
 cleanup:
     avcodec_free_context(&avctx);
-    avio_closep(&(*output_format_context)->pb);
-    avformat_free_context(*output_format_context);
-    *output_format_context = NULL;
+    avio_closep(&output_format_context->pb);
+    avformat_free_context(output_format_context);
+    output_format_context = NULL;
     return error < 0 ? error : AVERROR_EXIT;
 }
 /**
@@ -343,14 +394,9 @@ int AudioProcessor::init_input_frame(AVFrame **frame)
  * Initialize the audio resampler based on the input and output codec settings.
  * If the input and output sample formats differ, a conversion is required
  * libswresample takes care of this, but requires initialization.
- * @param      input_codec_context  Codec context of the input file
- * @param      output_codec_context Codec context of the output file
- * @param[out] resample_context     Resample context for the required conversion
  * @return Error code (0 if successful)
  */
-int AudioProcessor::init_resampler(AVCodecContext *input_codec_context,
-                                   AVCodecContext *output_codec_context,
-                                   SwrContext **resample_context)
+int AudioProcessor::init_resampler()
 {
     int error;
     /*
@@ -360,7 +406,7 @@ int AudioProcessor::init_resampler(AVCodecContext *input_codec_context,
      * are assumed for simplicity (they are sometimes not detected
      * properly by the demuxer and/or decoder).
      */
-    *resample_context = swr_alloc_set_opts(NULL,
+    resample_context = swr_alloc_set_opts(NULL,
                                            av_get_default_channel_layout(output_codec_context->channels),
                                            output_codec_context->sample_fmt,
                                            output_codec_context->sample_rate,
@@ -368,7 +414,7 @@ int AudioProcessor::init_resampler(AVCodecContext *input_codec_context,
                                            input_codec_context->sample_fmt,
                                            input_codec_context->sample_rate,
                                            0, NULL);
-    if (!*resample_context) {
+    if (!resample_context) {
         fprintf(stderr, "Could not allocate resample context\n");
         return AVERROR(ENOMEM);
     }
@@ -379,23 +425,21 @@ int AudioProcessor::init_resampler(AVCodecContext *input_codec_context,
      */
     av_assert0(output_codec_context->sample_rate == input_codec_context->sample_rate);
     /* Open the resampler with the specified parameters. */
-    if ((error = swr_init(*resample_context)) < 0) {
+    if ((error = swr_init(resample_context)) < 0) {
         fprintf(stderr, "Could not open resample context\n");
-        swr_free(resample_context);
+        swr_free(&resample_context);
         return error;
     }
     return 0;
 }
 /**
  * Initialize a FIFO buffer for the audio samples to be encoded.
- * @param[out] fifo                 Sample buffer
- * @param      output_codec_context Codec context of the output file
  * @return Error code (0 if successful)
  */
-int AudioProcessor::init_fifo(AVAudioFifo **fifo, AVCodecContext *output_codec_context)
+int AudioProcessor::init_fifo()
 {
     /* Create the FIFO buffer based on the specified output sample format. */
-    if (!(*fifo = av_audio_fifo_alloc(output_codec_context->sample_fmt,
+    if (!(fifo = av_audio_fifo_alloc(output_codec_context->sample_fmt,
                                       output_codec_context->channels, 1))) {
         fprintf(stderr, "Could not allocate FIFO\n");
         return AVERROR(ENOMEM);
@@ -404,10 +448,9 @@ int AudioProcessor::init_fifo(AVAudioFifo **fifo, AVCodecContext *output_codec_c
 }
 /**
  * Write the header of the output file container.
- * @param output_format_context Format context of the output file
  * @return Error code (0 if successful)
  */
-int AudioProcessor::write_output_file_header(AVFormatContext *output_format_context)
+int AudioProcessor::write_output_file_header()
 {
     int error;
     if ((error = avformat_write_header(output_format_context, NULL)) < 0) {
@@ -420,8 +463,6 @@ int AudioProcessor::write_output_file_header(AVFormatContext *output_format_cont
 /**
  * Decode one audio frame from the input file.
  * @param      frame                Audio frame to be decoded
- * @param      input_format_context Format context of the input file
- * @param      input_codec_context  Codec context of the input file
  * @param[out] data_present         Indicates whether data has been decoded
  * @param[out] finished             Indicates whether the end of file has
  *                                  been reached and all data has been
@@ -431,8 +472,6 @@ int AudioProcessor::write_output_file_header(AVFormatContext *output_format_cont
  * @return Error code (0 if successful)
  */
 int AudioProcessor::decode_audio_frame(AVFrame *frame,
-                                       AVFormatContext *input_format_context,
-                                       AVCodecContext *input_codec_context,
                                        int *data_present, int *finished)
 {
     /* Packet used for temporary storage. */
@@ -489,13 +528,11 @@ cleanup:
  * @param[out] converted_input_samples Array of converted samples. The
  *                                     dimensions are reference, channel
  *                                     (for multi-channel audio), sample.
- * @param      output_codec_context    Codec context of the output file
  * @param      frame_size              Number of samples to be converted in
  *                                     each round
  * @return Error code (0 if successful)
  */
 int AudioProcessor::init_converted_samples(uint8_t ***converted_input_samples,
-                                           AVCodecContext *output_codec_context,
                                            int frame_size)
 {
     int error;
@@ -504,7 +541,7 @@ int AudioProcessor::init_converted_samples(uint8_t ***converted_input_samples,
      * channels (although it may be NULL for interleaved formats).
      */
     if (!(*converted_input_samples = (uint8_t **) calloc(output_codec_context->channels,
-                                            sizeof(**converted_input_samples)))) {
+                                                         sizeof(**converted_input_samples)))) {
         fprintf(stderr, "Could not allocate converted input sample pointers\n");
         return AVERROR(ENOMEM);
     }
@@ -532,12 +569,10 @@ int AudioProcessor::init_converted_samples(uint8_t ***converted_input_samples,
  * @param[out] converted_data   Converted samples. The dimensions are channel
  *                              (for multi-channel audio), sample.
  * @param      frame_size       Number of samples to be converted
- * @param      resample_context Resample context for the conversion
  * @return Error code (0 if successful)
  */
 int AudioProcessor::convert_samples(const uint8_t **input_data,
-                                    uint8_t **converted_data, const int frame_size,
-                                    SwrContext *resample_context)
+                                    uint8_t **converted_data, const int frame_size)
 {
     int error;
     /* Convert the samples using the resampler. */
@@ -552,14 +587,12 @@ int AudioProcessor::convert_samples(const uint8_t **input_data,
 }
 /**
  * Add converted input audio samples to the FIFO buffer for later processing.
- * @param fifo                    Buffer to add the samples to
  * @param converted_input_samples Samples to be added. The dimensions are channel
  *                                (for multi-channel audio), sample.
  * @param frame_size              Number of samples to be converted
  * @return Error code (0 if successful)
  */
-int AudioProcessor::add_samples_to_fifo(AVAudioFifo *fifo,
-                                        uint8_t **converted_input_samples,
+int AudioProcessor::add_samples_to_fifo(uint8_t **converted_input_samples,
                                         const int frame_size)
 {
     int error;
@@ -580,11 +613,7 @@ int AudioProcessor::add_samples_to_fifo(AVAudioFifo *fifo,
 /**
  * Read one audio frame from the input file, decode, convert and store
  * it in the FIFO buffer.
- * @param      fifo                 Buffer used for temporary storage
- * @param      input_format_context Format context of the input file
- * @param      input_codec_context  Codec context of the input file
- * @param      output_codec_context Codec context of the output file
- * @param      resampler_context    Resample context for the conversion
+
  * @param[out] finished             Indicates whether the end of file has
  *                                  been reached and all data has been
  *                                  decoded. If this flag is false,
@@ -593,12 +622,7 @@ int AudioProcessor::add_samples_to_fifo(AVAudioFifo *fifo,
  *                                  again.
  * @return Error code (0 if successful)
  */
-int AudioProcessor::read_decode_convert_and_store(AVAudioFifo *fifo,
-                                                  AVFormatContext *input_format_context,
-                                                  AVCodecContext *input_codec_context,
-                                                  AVCodecContext *output_codec_context,
-                                                  SwrContext *resampler_context,
-                                                  int *finished)
+int AudioProcessor::read_decode_convert_and_store(int *finished)
 {
     /* Temporary storage of the input samples of the frame read from the file. */
     AVFrame *input_frame = NULL;
@@ -610,8 +634,7 @@ int AudioProcessor::read_decode_convert_and_store(AVAudioFifo *fifo,
     if (init_input_frame(&input_frame))
         goto cleanup;
     /* Decode one frame worth of audio samples. */
-    if (decode_audio_frame(input_frame, input_format_context,
-                           input_codec_context, &data_present, finished))
+    if (decode_audio_frame(input_frame, &data_present, finished))
         goto cleanup;
     /* If we are at the end of the file and there are no more samples
      * in the decoder which are delayed, we are actually finished.
@@ -623,17 +646,14 @@ int AudioProcessor::read_decode_convert_and_store(AVAudioFifo *fifo,
     /* If there is decoded data, convert and store it. */
     if (data_present) {
         /* Initialize the temporary storage for the converted input samples. */
-        if (init_converted_samples(&converted_input_samples, output_codec_context,
-                                   input_frame->nb_samples))
+        if (init_converted_samples(&converted_input_samples, input_frame->nb_samples))
             goto cleanup;
         /* Convert the input samples to the desired output sample format.
          * This requires a temporary storage provided by converted_input_samples. */
-        if (convert_samples((const uint8_t**)input_frame->extended_data, converted_input_samples,
-                            input_frame->nb_samples, resampler_context))
+        if (convert_samples((const uint8_t**)input_frame->extended_data, converted_input_samples, input_frame->nb_samples))
             goto cleanup;
         /* Add the converted input samples to the FIFO buffer for later processing. */
-        if (add_samples_to_fifo(fifo, converted_input_samples,
-                                input_frame->nb_samples))
+        if (add_samples_to_fifo(converted_input_samples, input_frame->nb_samples))
             goto cleanup;
         ret = 0;
     }
@@ -650,13 +670,10 @@ cleanup:
  * Initialize one input frame for writing to the output file.
  * The frame will be exactly frame_size samples large.
  * @param[out] frame                Frame to be initialized
- * @param      output_codec_context Codec context of the output file
  * @param      frame_size           Size of the frame
  * @return Error code (0 if successful)
  */
-int AudioProcessor::init_output_frame(AVFrame **frame,
-                                      AVCodecContext *output_codec_context,
-                                      int frame_size)
+int AudioProcessor::init_output_frame(AVFrame **frame, int frame_size)
 {
     int error;
     /* Create a new frame to store the audio samples. */
@@ -664,6 +681,7 @@ int AudioProcessor::init_output_frame(AVFrame **frame,
         fprintf(stderr, "Could not allocate output frame\n");
         return AVERROR_EXIT;
     }
+
     /* Set the frame's parameters, especially its size and format.
      * av_frame_get_buffer needs this to allocate memory for the
      * audio samples of the frame.
@@ -688,15 +706,11 @@ int AudioProcessor::init_output_frame(AVFrame **frame,
 /**
  * Encode one frame worth of audio to the output file.
  * @param      frame                 Samples to be encoded
- * @param      output_format_context Format context of the output file
- * @param      output_codec_context  Codec context of the output file
  * @param[out] data_present          Indicates whether data has been
  *                                   encoded
  * @return Error code (0 if successful)
  */
 int AudioProcessor::encode_audio_frame(AVFrame *frame,
-                                       AVFormatContext *output_format_context,
-                                       AVCodecContext *output_codec_context,
                                        int *data_present)
 {
     /* Packet used for temporary storage. */
@@ -753,14 +767,9 @@ cleanup:
 /**
  * Load one audio frame from the FIFO buffer, encode and write it to the
  * output file.
- * @param fifo                  Buffer used for temporary storage
- * @param output_format_context Format context of the output file
- * @param output_codec_context  Codec context of the output file
  * @return Error code (0 if successful)
  */
-int AudioProcessor::load_encode_and_write(AVAudioFifo *fifo,
-                                          AVFormatContext *output_format_context,
-                                          AVCodecContext *output_codec_context)
+int AudioProcessor::load_encode_and_write()
 {
     /* Temporary storage of the output samples of the frame written to the file. */
     AVFrame *output_frame;
@@ -768,10 +777,10 @@ int AudioProcessor::load_encode_and_write(AVAudioFifo *fifo,
      * If there is less than the maximum possible frame size in the FIFO
      * buffer use this number. Otherwise, use the maximum possible frame size. */
     const int frame_size = FFMIN(av_audio_fifo_size(fifo),
-                                 output_codec_context->frame_size);
+                                 1024 * 1024 * 20);
     int data_written;
     /* Initialize temporary storage for one output frame. */
-    if (init_output_frame(&output_frame, output_codec_context, frame_size))
+    if (init_output_frame(&output_frame, frame_size))
         return AVERROR_EXIT;
     /* Read as many samples from the FIFO buffer as required to fill the frame.
      * The samples are stored in the frame temporarily. */
@@ -781,8 +790,7 @@ int AudioProcessor::load_encode_and_write(AVAudioFifo *fifo,
         return AVERROR_EXIT;
     }
     /* Encode one frame worth of audio samples. */
-    if (encode_audio_frame(output_frame, output_format_context,
-                           output_codec_context, &data_written)) {
+    if (encode_audio_frame(output_frame, &data_written)) {
         av_frame_free(&output_frame);
         return AVERROR_EXIT;
     }
@@ -791,10 +799,9 @@ int AudioProcessor::load_encode_and_write(AVAudioFifo *fifo,
 }
 /**
  * Write the trailer of the output file container.
- * @param output_format_context Format context of the output file
  * @return Error code (0 if successful)
  */
-int AudioProcessor::write_output_file_trailer(AVFormatContext *output_format_context)
+int AudioProcessor::write_output_file_trailer()
 {
     int error;
     if ((error = av_write_trailer(output_format_context)) < 0) {

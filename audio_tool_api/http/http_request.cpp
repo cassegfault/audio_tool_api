@@ -53,15 +53,20 @@ HTTPRequest::HTTPRequest(http::request<request_body_t, http::basic_fields<alloc_
     for(auto const& header : req) {
         headers.emplace(header.name_string(), header.value());
     }
-    
+    cout << "content-type: " << req.at("content-type") << endl;
     //if (req.at("content-type").find("multipart") > -1){
         memset(&m_callbacks, 0, sizeof(multipart_parser_settings));
-    m_callbacks.on_part_data = [](multipart_parser* p, const char *at, size_t length){
-        string test(at,length);
-        cout << test << endl;
-        return 0;
-    };
-        m_callbacks.on_header_value = ReadHeaderValue;
+        m_callbacks.on_part_data = [](multipart_parser* p, const char *at, size_t length){
+            HTTPRequest * self = (HTTPRequest *)multipart_parser_get_data(p);
+            self->current_file_data.append(at,length);
+            return 0;
+        };
+        m_callbacks.on_part_data_end = [](multipart_parser* p){
+            HTTPRequest * self = (HTTPRequest *)multipart_parser_get_data(p);
+            self->files.emplace_back(self->current_file_data);
+            self->current_file_data.clear();
+            return 0;
+        };
     
         std::string boundary = "";
         if (req.find("content-type") != req.end()) {
@@ -69,22 +74,20 @@ HTTPRequest::HTTPRequest(http::request<request_body_t, http::basic_fields<alloc_
             auto index = boundary.find("boundary=");
             
             if(index != -1) {
-                boundary = boundary.substr(index + strlen("boundary="));
+                boundary = "--" + boundary.substr(index + 9);
             } else {
                 cerr << "Invalid boundary:" << boundary << endl;
             }
         }
-    cout << boundary << endl;
     
         m_parser = multipart_parser_init(boundary.c_str(), &m_callbacks);
         multipart_parser_set_data(m_parser, this);
-        auto body = req.body();
-    cout << "length: " << body.length() << endl;
-        multipart_parser_execute(m_parser, body.data(),body.length());
+        multipart_parser_execute(m_parser, req.body().c_str(), req.body().length());
+    
     //}
     
 }
 
 HTTPRequest::~HTTPRequest(){
-    multipart_parser_free(m_parser);
+    
 }

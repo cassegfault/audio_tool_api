@@ -18,7 +18,7 @@ class BaseHandler {
 public:
     
     BaseHandler();
-    ~BaseHandler(){};
+    ~BaseHandler(){ cout << "Handler Destructed" << endl; };
     
     virtual void get(HTTPRequest request_data);
     virtual void post(HTTPRequest request_data);
