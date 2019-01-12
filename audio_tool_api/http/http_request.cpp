@@ -17,7 +17,7 @@ HTTPRequest::HTTPRequest(http::request<request_body_t, http::basic_fields<alloc_
     verb = _req.method();
     
     for (const char& c : _req.target()) {
-        if (c == '?') {
+        if (c == '?' || c == '#') {
             path = current_param_name;
             current_param_name.clear();
             in_params = true;
@@ -53,7 +53,10 @@ HTTPRequest::HTTPRequest(http::request<request_body_t, http::basic_fields<alloc_
     for(auto const& header : req) {
         headers.emplace(header.name_string(), header.value());
     }
-    cout << "content-type: " << req.at("content-type") << endl;
+    if(headers.find("content-type") != headers.end()){
+        cout << "content-type: " << req.at("content-type") << endl;
+    }
+    
     //if (req.at("content-type").find("multipart") > -1){
         memset(&m_callbacks, 0, sizeof(multipart_parser_settings));
         m_callbacks.on_part_data = [](multipart_parser* p, const char *at, size_t length){
@@ -90,4 +93,16 @@ HTTPRequest::HTTPRequest(http::request<request_body_t, http::basic_fields<alloc_
 
 HTTPRequest::~HTTPRequest(){
     
+}
+
+bool HTTPRequest::has_header(string header_name) {
+    return headers.find(header_name) != headers.end();
+}
+
+bool HTTPRequest::has_param(string param_name) {
+    return url_params.find(param_name) != url_params.end();
+}
+
+nlohmann::json HTTPRequest::json(){
+    return nlohmann::json::parse(_req.body());
 }

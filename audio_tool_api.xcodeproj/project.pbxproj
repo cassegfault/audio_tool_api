@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D603517D21C2897E008C9D13 /* audio_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D603517B21C2897E008C9D13 /* audio_processor.cpp */; };
 		D62F0AE721B44F860085A671 /* http_request.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D62F0AE621B44F860085A671 /* http_request.cpp */; };
 		D62F0AEB21B45AF50085A671 /* http_response.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D62F0AE921B45AF50085A671 /* http_response.cpp */; };
 		D62F0AED21B468C50085A671 /* libavcodec.58.35.100.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D62F0AEC21B468C50085A671 /* libavcodec.58.35.100.dylib */; };
@@ -15,6 +16,15 @@
 		D62F0AF321B483BC0085A671 /* libavresample.4.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D62F0AF121B483BC0085A671 /* libavresample.4.0.0.dylib */; };
 		D62F0AF621B483FE0085A671 /* libavdevice.58.5.100.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D62F0AF421B483FD0085A671 /* libavdevice.58.5.100.dylib */; };
 		D62F0AF721B483FE0085A671 /* libavutil.56.22.100.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D62F0AF521B483FE0085A671 /* libavutil.56.22.100.dylib */; };
+		D6437E2421E28ECA00651678 /* stats_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6437E2221E28ECA00651678 /* stats_client.cpp */; };
+		D6437E2F21E42B1500651678 /* libmysqlcppconn.7.1.1.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D6437E2E21E42B1500651678 /* libmysqlcppconn.7.1.1.8.dylib */; };
+		D6437E3321E4D17B00651678 /* libglog.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D6437E3221E4D17B00651678 /* libglog.0.dylib */; };
+		D6437E3521E4D51E00651678 /* config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6437E3421E4D51E00651678 /* config.cpp */; };
+		D64F642521E6204300A1C99C /* auth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F642321E6204300A1C99C /* auth.cpp */; };
+		D64F642A21E6380500A1C99C /* libcurl.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F642921E6380500A1C99C /* libcurl.4.dylib */; };
+		D64F643221E764BF00A1C99C /* user.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F643021E764BF00A1C99C /* user.cpp */; };
+		D64F643521E7661E00A1C99C /* session.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F643321E7661E00A1C99C /* session.cpp */; };
+		D64F643821E7681300A1C99C /* database.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F643621E7681300A1C99C /* database.cpp */; };
 		D6531AB421B44CB7005034F8 /* decode_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6531AB221B44CB7005034F8 /* decode_file.cpp */; };
 		D67E369E21B2C8B1008BE6F9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67E369D21B2C8B1008BE6F9 /* main.cpp */; };
 		D67E36AB21B2CA32008BE6F9 /* libssl.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36A921B2CA32008BE6F9 /* libssl.1.0.0.dylib */; };
@@ -44,6 +54,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D603517B21C2897E008C9D13 /* audio_processor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = audio_processor.cpp; sourceTree = "<group>"; };
+		D603517C21C2897E008C9D13 /* audio_processor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = audio_processor.h; sourceTree = "<group>"; };
 		D62F0AE621B44F860085A671 /* http_request.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = http_request.cpp; sourceTree = "<group>"; };
 		D62F0AE921B45AF50085A671 /* http_response.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = http_response.cpp; sourceTree = "<group>"; };
 		D62F0AEA21B45AF50085A671 /* http_response.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = http_response.h; sourceTree = "<group>"; };
@@ -53,6 +65,29 @@
 		D62F0AF121B483BC0085A671 /* libavresample.4.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavresample.4.0.0.dylib; path = ../../../../usr/local/Cellar/ffmpeg/4.1/lib/libavresample.4.0.0.dylib; sourceTree = "<group>"; };
 		D62F0AF421B483FD0085A671 /* libavdevice.58.5.100.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavdevice.58.5.100.dylib; path = ../../../../usr/local/Cellar/ffmpeg/4.1/lib/libavdevice.58.5.100.dylib; sourceTree = "<group>"; };
 		D62F0AF521B483FE0085A671 /* libavutil.56.22.100.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavutil.56.22.100.dylib; path = ../../../../usr/local/Cellar/ffmpeg/4.1/lib/libavutil.56.22.100.dylib; sourceTree = "<group>"; };
+		D6437E2221E28ECA00651678 /* stats_client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stats_client.cpp; sourceTree = "<group>"; };
+		D6437E2321E28ECA00651678 /* stats_client.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stats_client.h; sourceTree = "<group>"; };
+		D6437E2521E2B3A500651678 /* timer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
+		D6437E2721E37FB400651678 /* websocket_listener.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = websocket_listener.cpp; sourceTree = "<group>"; };
+		D6437E2821E37FB400651678 /* websocket_listener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = websocket_listener.h; sourceTree = "<group>"; };
+		D6437E2A21E3805C00651678 /* websocket_session.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = websocket_session.cpp; sourceTree = "<group>"; };
+		D6437E2B21E3805C00651678 /* websocket_session.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = websocket_session.h; sourceTree = "<group>"; };
+		D6437E2E21E42B1500651678 /* libmysqlcppconn.7.1.1.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlcppconn.7.1.1.8.dylib; path = "../../../../usr/local/Cellar/mysql-connector-c++/1.1.8/lib/libmysqlcppconn.7.1.1.8.dylib"; sourceTree = "<group>"; };
+		D6437E3021E4C94F00651678 /* json.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
+		D6437E3121E4C96E00651678 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		D6437E3221E4D17B00651678 /* libglog.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglog.0.dylib; path = ../../../../usr/local/Cellar/glog/0.3.4_1/lib/libglog.0.dylib; sourceTree = "<group>"; };
+		D6437E3421E4D51E00651678 /* config.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = config.cpp; sourceTree = "<group>"; };
+		D64F642321E6204300A1C99C /* auth.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = auth.cpp; sourceTree = "<group>"; };
+		D64F642421E6204300A1C99C /* auth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = auth.h; sourceTree = "<group>"; };
+		D64F642721E6376A00A1C99C /* requests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = requests.h; sourceTree = "<group>"; };
+		D64F642921E6380500A1C99C /* libcurl.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.4.dylib; path = ../../../../usr/lib/libcurl.4.dylib; sourceTree = "<group>"; };
+		D64F643021E764BF00A1C99C /* user.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = user.cpp; sourceTree = "<group>"; };
+		D64F643121E764BF00A1C99C /* user.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = user.h; sourceTree = "<group>"; };
+		D64F643321E7661E00A1C99C /* session.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = session.cpp; sourceTree = "<group>"; };
+		D64F643421E7661E00A1C99C /* session.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = session.h; sourceTree = "<group>"; };
+		D64F643621E7681300A1C99C /* database.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = database.cpp; sourceTree = "<group>"; };
+		D64F643721E7681300A1C99C /* database.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = database.h; sourceTree = "<group>"; };
+		D64F644A21EA2D0800A1C99C /* http_exception.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = http_exception.h; sourceTree = "<group>"; };
 		D6531AAF21B42891005034F8 /* http_request.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = http_request.h; sourceTree = "<group>"; };
 		D6531AB121B42FAA005034F8 /* routes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = routes.h; sourceTree = "<group>"; };
 		D6531AB221B44CB7005034F8 /* decode_file.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = decode_file.cpp; sourceTree = "<group>"; };
@@ -73,6 +108,7 @@
 		D67E36C521B338D5008BE6F9 /* http_worker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = http_worker.cpp; sourceTree = "<group>"; };
 		D67E36C621B338D5008BE6F9 /* http_worker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = http_worker.h; sourceTree = "<group>"; };
 		D67E36C821B33975008BE6F9 /* fields_alloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fields_alloc.h; sourceTree = "<group>"; };
+		D6C21BBF21C9B27E00E50449 /* libhttpd_main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = libhttpd_main.cpp; sourceTree = "<group>"; };
 		D6C269E621BACF52009D9D01 /* libmimetic.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmimetic.0.dylib; path = ../../../../usr/local/lib/libmimetic.0.dylib; sourceTree = "<group>"; };
 		D6C269E921BAD27B009D9D01 /* libmimetic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmimetic.a; path = ../../../../usr/local/lib/libmimetic.a; sourceTree = "<group>"; };
 		D6C269EC21BAE14A009D9D01 /* multipart_parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multipart_parser.h; sourceTree = "<group>"; };
@@ -88,6 +124,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D64F642A21E6380500A1C99C /* libcurl.4.dylib in Frameworks */,
+				D6437E3321E4D17B00651678 /* libglog.0.dylib in Frameworks */,
+				D6437E2F21E42B1500651678 /* libmysqlcppconn.7.1.1.8.dylib in Frameworks */,
 				D6C269F121BB1275009D9D01 /* libswscale.5.3.100.dylib in Frameworks */,
 				D6C269F221BB1275009D9D01 /* libswresample.3.3.100.dylib in Frameworks */,
 				D62F0AF621B483FE0085A671 /* libavdevice.58.5.100.dylib in Frameworks */,
@@ -108,6 +147,44 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D6437E2121E28EA200651678 /* utilities */ = {
+			isa = PBXGroup;
+			children = (
+				D6437E3021E4C94F00651678 /* json.hpp */,
+				D6437E2221E28ECA00651678 /* stats_client.cpp */,
+				D6437E2321E28ECA00651678 /* stats_client.h */,
+				D6437E2521E2B3A500651678 /* timer.h */,
+				D6437E3421E4D51E00651678 /* config.cpp */,
+				D6437E3121E4C96E00651678 /* config.h */,
+				D64F642721E6376A00A1C99C /* requests.h */,
+				D64F643621E7681300A1C99C /* database.cpp */,
+				D64F643721E7681300A1C99C /* database.h */,
+			);
+			path = utilities;
+			sourceTree = "<group>";
+		};
+		D6437E2621E37FA000651678 /* ws */ = {
+			isa = PBXGroup;
+			children = (
+				D6437E2721E37FB400651678 /* websocket_listener.cpp */,
+				D6437E2821E37FB400651678 /* websocket_listener.h */,
+				D6437E2A21E3805C00651678 /* websocket_session.cpp */,
+				D6437E2B21E3805C00651678 /* websocket_session.h */,
+			);
+			path = ws;
+			sourceTree = "<group>";
+		};
+		D64F642F21E7649900A1C99C /* models */ = {
+			isa = PBXGroup;
+			children = (
+				D64F643021E764BF00A1C99C /* user.cpp */,
+				D64F643121E764BF00A1C99C /* user.h */,
+				D64F643321E7661E00A1C99C /* session.cpp */,
+				D64F643421E7661E00A1C99C /* session.h */,
+			);
+			path = models;
+			sourceTree = "<group>";
+		};
 		D67E369121B2C8B1008BE6F9 = {
 			isa = PBXGroup;
 			children = (
@@ -128,10 +205,14 @@
 		D67E369C21B2C8B1008BE6F9 /* audio_tool_api */ = {
 			isa = PBXGroup;
 			children = (
+				D64F642F21E7649900A1C99C /* models */,
+				D6437E2621E37FA000651678 /* ws */,
+				D6437E2121E28EA200651678 /* utilities */,
 				D6C269F321BBFEC7009D9D01 /* audio */,
 				D67E36BF21B324F1008BE6F9 /* handlers */,
 				D67E36B821B2FCA5008BE6F9 /* http */,
 				D67E369D21B2C8B1008BE6F9 /* main.cpp */,
+				D6C21BBF21C9B27E00E50449 /* libhttpd_main.cpp */,
 			);
 			path = audio_tool_api;
 			sourceTree = "<group>";
@@ -139,6 +220,9 @@
 		D67E36A421B2C9A3008BE6F9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D64F642921E6380500A1C99C /* libcurl.4.dylib */,
+				D6437E3221E4D17B00651678 /* libglog.0.dylib */,
+				D6437E2E21E42B1500651678 /* libmysqlcppconn.7.1.1.8.dylib */,
 				D6C269F021BB1275009D9D01 /* libswresample.3.3.100.dylib */,
 				D6C269EF21BB1275009D9D01 /* libswscale.5.3.100.dylib */,
 				D6C269E921BAD27B009D9D01 /* libmimetic.a */,
@@ -166,6 +250,7 @@
 			isa = PBXGroup;
 			children = (
 				D6531AB121B42FAA005034F8 /* routes.h */,
+				D64F644A21EA2D0800A1C99C /* http_exception.h */,
 				D67E36C521B338D5008BE6F9 /* http_worker.cpp */,
 				D67E36C621B338D5008BE6F9 /* http_worker.h */,
 				D67E36C821B33975008BE6F9 /* fields_alloc.h */,
@@ -186,6 +271,8 @@
 				D67E36C121B32515008BE6F9 /* base_handler.h */,
 				D6531AB221B44CB7005034F8 /* decode_file.cpp */,
 				D6531AB321B44CB7005034F8 /* decode_file.h */,
+				D64F642321E6204300A1C99C /* auth.cpp */,
+				D64F642421E6204300A1C99C /* auth.h */,
 			);
 			path = handlers;
 			sourceTree = "<group>";
@@ -195,6 +282,8 @@
 			children = (
 				D6C269F421BBFEFF009D9D01 /* processor.cpp */,
 				D6C269F521BBFEFF009D9D01 /* processor.h */,
+				D603517B21C2897E008C9D13 /* audio_processor.cpp */,
+				D603517C21C2897E008C9D13 /* audio_processor.h */,
 			);
 			path = audio;
 			sourceTree = "<group>";
@@ -257,12 +346,19 @@
 			files = (
 				D67E36C221B32515008BE6F9 /* base_handler.cpp in Sources */,
 				D67E369E21B2C8B1008BE6F9 /* main.cpp in Sources */,
+				D64F643221E764BF00A1C99C /* user.cpp in Sources */,
+				D6437E3521E4D51E00651678 /* config.cpp in Sources */,
+				D6437E2421E28ECA00651678 /* stats_client.cpp in Sources */,
 				D62F0AE721B44F860085A671 /* http_request.cpp in Sources */,
+				D64F643521E7661E00A1C99C /* session.cpp in Sources */,
+				D603517D21C2897E008C9D13 /* audio_processor.cpp in Sources */,
 				D67E36C721B338D5008BE6F9 /* http_worker.cpp in Sources */,
 				D6C269EE21BAE14A009D9D01 /* multipart_parser.c in Sources */,
 				D62F0AEB21B45AF50085A671 /* http_response.cpp in Sources */,
 				D6C269F621BBFEFF009D9D01 /* processor.cpp in Sources */,
 				D6531AB421B44CB7005034F8 /* decode_file.cpp in Sources */,
+				D64F642521E6204300A1C99C /* auth.cpp in Sources */,
+				D64F643821E7681300A1C99C /* database.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -385,7 +481,10 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_COMMA = NO;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/include,
 					/usr/local/opt/openssl/include,
@@ -396,6 +495,8 @@
 					/usr/local/Cellar/openssl/1.0.2q/lib,
 					/usr/local/Cellar/boost/1.68.0/lib,
 					/usr/local/Cellar/ffmpeg/4.1/lib,
+					"/usr/local/Cellar/mysql-connector-c++/1.1.8/lib",
+					/usr/local/Cellar/glog/0.3.4_1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -406,7 +507,10 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_COMMA = NO;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/include,
 					/usr/local/opt/openssl/include,
@@ -417,6 +521,8 @@
 					/usr/local/Cellar/openssl/1.0.2q/lib,
 					/usr/local/Cellar/boost/1.68.0/lib,
 					/usr/local/Cellar/ffmpeg/4.1/lib,
+					"/usr/local/Cellar/mysql-connector-c++/1.1.8/lib",
+					/usr/local/Cellar/glog/0.3.4_1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

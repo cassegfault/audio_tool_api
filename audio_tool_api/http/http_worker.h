@@ -12,6 +12,7 @@
 #include "fields_alloc.h"
 #include "routes.h"
 #include "http_worker.h"
+#include "http_exception.h"
 
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>

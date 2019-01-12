@@ -10,6 +10,9 @@
 
 
 BaseHandler::BaseHandler () {
+    db = new db::Connection();
+    db->open(config()->db_connection_string, config()->db_user, config()->db_password, config()->db_database);
+    
     // Defaults for handlers, not necessarily undefined routes
     response.body = "";
     response.status = 200;

@@ -7,6 +7,9 @@
 //
 
 #include "http_worker.h"
+#include <chrono>
+#include "../utilities/stats_client.h"
+#include "../utilities/timer.h"
 
 void HTTPWorker::accept() {
     // Clean up any previous connection.
@@ -62,38 +65,51 @@ unique_ptr<BaseHandler> HTTPWorker::find_route(string path) {
 
 void HTTPWorker::process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req) {
     cout << req.target() << endl;
+    stats()->increment("requests");
+    timer request_timer;
+    request_timer.start();
     HTTPRequest req_data(req);
     
     std::unique_ptr<BaseHandler> found_handler(find_route(req_data.path));
     
     if (found_handler == nullptr) {
         send_bad_response(http::int_to_status(404), "Route not found");
+        stats()->time("request_length", (int)request_timer.microseconds());
         return;
     }
     
-    switch (req.method()) {
-        case http::verb::head:
-            found_handler->head(req_data);
-            break;
-        case http::verb::options:
-            found_handler->options(req_data);
-            break;
-        case http::verb::get:
-            found_handler->get(req_data);
-            break;
-        case http::verb::post:
-            found_handler->post(req_data);
-            break;
-        case http::verb::put:
-            found_handler->put(req_data);
-            break;
-        case http::verb::delete_:
-            found_handler->delete_(req_data);
-            break;
-            
-        default:
-            return send_bad_response(http::status::bad_request, "Invalid request-method '" + req.method_string().to_string() + "'\r\n");
-            break;
+    try {
+        switch (req.method()) {
+            case http::verb::head:
+                found_handler->head(req_data);
+                break;
+            case http::verb::options:
+                found_handler->options(req_data);
+                break;
+            case http::verb::get:
+                found_handler->get(req_data);
+                break;
+            case http::verb::post:
+                found_handler->post(req_data);
+                break;
+            case http::verb::put:
+                found_handler->put(req_data);
+                break;
+            case http::verb::delete_:
+                found_handler->delete_(req_data);
+                break;
+                
+            default:
+                stats()->time("request_length", (int)request_timer.microseconds());
+                return send_bad_response(http::status::bad_request, "Invalid request-method '" + req.method_string().to_string() + "'\r\n");
+                break;
+        }
+    } catch (http_exception e) {
+        return send_bad_response(http::int_to_status(e.http_code), e.what());
+    }catch (std::exception e) {
+        return send_bad_response(http::status::internal_server_error, "There was an error processing your request – Please wait and try again");
+    } catch (...) {
+        return send_bad_response(http::status::internal_server_error, "Unhandled exception caught by the server – Please wait and try again");
     }
     
     
@@ -114,6 +130,7 @@ void HTTPWorker::process_request(http::request<request_body_t, http::basic_field
     
     string_serializer_.emplace(*string_response_);
     
+    stats()->time("request_length", (int)request_timer.microseconds());
     http::async_write(socket_, *string_serializer_, [this](boost::beast::error_code ec, std::size_t) {
         socket_.shutdown(tcp::socket::shutdown_send, ec);
         string_serializer_.reset();
@@ -128,8 +145,10 @@ void HTTPWorker::send_bad_response(http::status status, std::string const& error
     string_response_->result(status);
     string_response_->keep_alive(false);
     string_response_->set(http::field::server, "Audio Tool API");
-    string_response_->set(http::field::content_type, "text/plain");
-    string_response_->body() = error;
+    string_response_->set(http::field::content_type, "application/json");
+    json j;
+    j["error"] = error;
+    string_response_->body() = j.dump();
     string_response_->prepare_payload();
     
     string_serializer_.emplace(*string_response_);

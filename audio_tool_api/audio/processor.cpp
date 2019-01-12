@@ -144,7 +144,7 @@ void AudioProcessor::set_input_content(uint8_t * data, size_t size) {
 }
 
 string AudioProcessor::get_output_content(){
-    return string((const char *)this->obd.buf.get(), this->obd.size);
+    return string((const char *)this->obd.buf.get(), this->obd.size - this->obd.room);
 }
 
 int AudioProcessor::open_input_file()
@@ -453,7 +453,8 @@ int AudioProcessor::init_fifo()
 int AudioProcessor::write_output_file_header()
 {
     int error;
-    if ((error = avformat_write_header(output_format_context, NULL)) < 0) {
+    /* see https://stackoverflow.com/questions/31371190/create-a-44-byte-header-with-ffmpeg */
+    if ((error = avformat_write_header(output_format_context, &output_format_context->metadata)) < 0) {
         fprintf(stderr, "Could not write output file header (error '%s')\n",
                 av_err2str(error));
         return error;

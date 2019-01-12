@@ -16,6 +16,7 @@
 #include <boost/beast/http.hpp>
 #include <string>
 #include <vector>
+#include "../utilities/json.hpp"
 #include "fields_alloc.h"
 #include "multipart_parser.h"
 
@@ -36,6 +37,11 @@ public:
     http::request<request_body_t, http::basic_fields<alloc_t>> const& _req;
     
     vector<string> files;
+    
+    bool has_header(string header_name);
+    bool has_param(string param_name);
+    
+    nlohmann::json json();
     
 private:
     string not_found_response = "404 Route not found";

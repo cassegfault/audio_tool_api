@@ -81,11 +81,21 @@ public:
     int open_input_file();
     
     
+    
+    
 private:
     int64_t pts = 0;
     
+    /* This may need to be configurable down the road */
     int OUTPUT_BIT_RATE = 96000;
     int OUTPUT_CHANNELS = 2;
+    
+    typedef struct FilteringContext {
+        AVFilterContext *buffersink_ctx;
+        AVFilterContext *buffersrc_ctx;
+        AVFilterGraph *filter_graph;
+    } FilteringContext;
+    FilteringContext *filter_ctx;
     
     uint8_t * input_buffer;
     size_t input_buffer_size;

@@ -13,12 +13,18 @@
 #include <unordered_map>
 #include "../http/http_request.h"
 #include "../http/http_response.h"
+#include "../utilities/config.h"
+#include "../utilities/database.h"
 
 class BaseHandler {
 public:
     
     BaseHandler();
-    ~BaseHandler(){ cout << "Handler Destructed" << endl; };
+    ~BaseHandler(){
+        cout << "Handler Destructed" << endl;
+        db->close();
+    };
+    db::Connection *db;
     
     virtual void get(HTTPRequest request_data);
     virtual void post(HTTPRequest request_data);
