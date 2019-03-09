@@ -7,9 +7,6 @@
 //
 
 #include "http_worker.h"
-#include <chrono>
-#include "../utilities/stats_client.h"
-#include "../utilities/timer.h"
 
 void HTTPWorker::accept() {
     // Clean up any previous connection.
@@ -41,13 +38,11 @@ void HTTPWorker::read_request() {
     // We construct the dynamic body with a 1MB limit
     // to prevent vulnerability to buffer attacks.
     //
-    std::cout << "request" << endl;
     parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
     parser_->body_limit(1024 * 1024 * 1024);
     http::async_read(socket_, buffer_, *parser_, [this](boost::beast::error_code ec, std::size_t) {
         
         if (ec){
-            std::cout << "Error: " << ec.message() <<endl;
             accept();
         }
         else
@@ -55,22 +50,22 @@ void HTTPWorker::read_request() {
     });
 }
 
-unique_ptr<BaseHandler> HTTPWorker::find_route(string path) {
+unique_ptr<base_handler> HTTPWorker::find_route(string path) {
     auto found_route = application_routes.find(path);
     if (found_route != application_routes.end()) {
-        return unique_ptr<BaseHandler>(found_route->second());
+        return unique_ptr<base_handler>(found_route->second());
     }
     return nullptr;
 }
 
 void HTTPWorker::process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req) {
-    cout << req.target() << endl;
+    LOG(INFO) << req.target();
     stats()->increment("requests");
     timer request_timer;
     request_timer.start();
-    HTTPRequest req_data(req);
+    http_request req_data(req);
     
-    std::unique_ptr<BaseHandler> found_handler(find_route(req_data.path));
+    std::unique_ptr<base_handler> found_handler(find_route(req_data.path));
     
     if (found_handler == nullptr) {
         send_bad_response(http::int_to_status(404), "Route not found");
@@ -78,7 +73,31 @@ void HTTPWorker::process_request(http::request<request_body_t, http::basic_field
         return;
     }
     
-    try {
+    if(found_handler->requires_authentication){
+        if(req.find("session-token") == req.end()) {
+            send_bad_response(http::status::unauthorized, "Unauthorized");
+            return;
+        }
+        string token = req.at("session-token").to_string();
+        
+        try {
+            found_handler->user.fill_by_token(found_handler->db, token);
+        } catch (runtime_error e){
+            send_bad_response(http::status::unauthorized, string("Unauthorized: ") + e.what());
+            return;
+        }
+        try {
+            found_handler->user.refresh_session(found_handler->db);
+        } catch (runtime_error e) {
+            // Sentry call here
+            LOG(WARNING) << "Could not refresh session";
+        }
+    }
+    
+    // Run the handler
+    //try {
+        // we need to use a req_data pointer if
+        found_handler->setup(&req_data);
         switch (req.method()) {
             case http::verb::head:
                 found_handler->head(req_data);
@@ -104,13 +123,17 @@ void HTTPWorker::process_request(http::request<request_body_t, http::basic_field
                 return send_bad_response(http::status::bad_request, "Invalid request-method '" + req.method_string().to_string() + "'\r\n");
                 break;
         }
-    } catch (http_exception e) {
+        found_handler->finish(req_data);
+    /*} catch (http_exception e) {
         return send_bad_response(http::int_to_status(e.http_code), e.what());
-    }catch (std::exception e) {
-        return send_bad_response(http::status::internal_server_error, "There was an error processing your request – Please wait and try again");
+    }catch (std::exception& e) {
+        string error_message = "There was an error processing your request – Please wait and try again: ";
+        error_message += e.what();
+        return send_bad_response(http::status::internal_server_error,  error_message );
     } catch (...) {
         return send_bad_response(http::status::internal_server_error, "Unhandled exception caught by the server – Please wait and try again");
-    }
+    }*/
+    
     
     
     // TODO: swap out string response for empty response if empty_body flag is set
@@ -125,7 +148,7 @@ void HTTPWorker::process_request(http::request<request_body_t, http::basic_field
         string_response_->set(header.first, header.second);
     }
     
-    string_response_->body() = found_handler->response.body;
+    string_response_->body() = found_handler->response.get_content();
     string_response_->prepare_payload();
     
     string_serializer_.emplace(*string_response_);

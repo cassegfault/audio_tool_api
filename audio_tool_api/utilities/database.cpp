@@ -49,26 +49,38 @@ namespace db{
     
     Query::~Query() {
         stmt->close();
+        delete stmt;
+        delete results;
+        stmt = nullptr;
+        results = nullptr;
     }
     
     void Query::execute() {
         if(!did_execute){
             results = stmt->executeQuery();
             did_execute = true;
-            cout << "query executed" << endl;
         }
+        
     }
     
     response_row Query::row(){
         if (!did_execute){
             execute();
         }
-        cout << "row next called" << endl;
         // iterate the row
         bool has_next = results->next();
-        if(!has_next)
-            cout << "Exceeded result set rows" << endl;
+        if (!has_next) {
+            LOG(ERROR) << "Query::row call exceeded row count";
+             throw runtime_error("Query::row call exceeded row count");
+        }
         return response_row(this);
+    }
+    
+    int Query::row_count(){
+        if(!did_execute){
+            execute();
+        }
+        return results->rowsCount();
     }
     
     void Query::set_param(int32_t p){
@@ -90,6 +102,11 @@ namespace db{
     }
     
     void Query::set_param(uint64_t p){
+        // @tag database abstraction
+        stmt->setUInt64(param_index, p);
+        param_index++;
+    }
+    void Query::set_param(size_t p){
         // @tag database abstraction
         stmt->setUInt64(param_index, p);
         param_index++;

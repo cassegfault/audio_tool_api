@@ -7,13 +7,16 @@
 //
 
 #include "auth.h"
-#include <curl/curl.h>
 
 static size_t curl_write_func(void *contents, size_t size, size_t nmemb, void *userp){
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 };
 
+/**
+ This works until it doesn't. Need to make sure we're not hitting quotas and
+ handle error responses due to those quotas accordingly
+*/
 string get_email(string token) {
     CURL *curl;
     CURLcode res;
@@ -27,7 +30,7 @@ string get_email(string token) {
         };
         struct curl_slist *chunk = nullptr;
         chunk = curl_slist_append(chunk, string("Authorization: Bearer " + token).c_str());
-        curl_easy_setopt(curl, CURLOPT_URL, "https://people.googleapis.com/v1/people/me");
+        curl_easy_setopt(curl, CURLOPT_URL, "https://people.googleapis.com/v1/people/me?personFields=emailAddresses%2Cnames");
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, static_cast<CURL_WRITEFUNCTION_PTR>(writefunc));
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_body);
@@ -48,7 +51,6 @@ string get_email(string token) {
         for(auto &el : people["emailAddresses"].items()){
             if(el.value().find("value") != el.value().end()) {
                 // Check email address in DB
-                cout << "Found Email Address:" << el.value()["value"] << endl;
                 return el.value()["value"];
             } else {
                 LOG(ERROR) << "Did not receive email despite proper Google OAuth Flow";
@@ -56,6 +58,9 @@ string get_email(string token) {
         }
     } else {
         LOG(ERROR) << "Did not receive email despite proper Google OAuth Flow";
+        if(people.find("error") != people.end()){
+            LOG(ERROR) << people["error"].dump();
+        }
     }
     return nullptr;
 }
@@ -95,14 +100,14 @@ string get_token(string code){
     
     json j = json::parse(response_body);
     if(j.find("access_token") != j.end()) {
-        return j["token"];
+        return j["access_token"];
     } else {
         LOG(ERROR) << "Did not receive access token during Google OAuth flow";
         return nullptr;
     }
 }
 
-void AuthHandler::get(HTTPRequest request_data) {
+void auth_handler::get(http_request request_data) {
     // This handler always forwards
     response.status = 302;
     
@@ -114,25 +119,62 @@ void AuthHandler::get(HTTPRequest request_data) {
         // OAuth Success
         string token = get_token(request_data.url_params["code"]);
         string email_address = get_email(token);
+        user.fill_by_email(db, email_address);
+        user.create_session(db);
         
-        response.headers.emplace("Location","https://audiotool.v3x.pw/login#session-token=");
+        string location = "https://audiotool.v3x.pw/login/success/";
+        string escaped_token;
+        for(auto c : user.current_session.token) {
+            if(c == '/') {
+                escaped_token += "%2F";
+            } else if (c == '+') {
+                escaped_token += "%2B";
+            } else if (c == '=') {
+                escaped_token += "%3D";
+            } else {
+                escaped_token += c;
+            }
+        }
+        location += escaped_token;
+        response.headers.emplace("Location",location);
+        
     } else {
         couldNotAuth = true;
     }
     
     if(couldNotAuth){
-        response.headers.emplace("Location","https://audiotool.v3x.pw/login#error=badAuth");
+        response.headers.emplace("Location","https://audiotool.v3x.pw/login/error/badAuth");
     }
 }
 
-void AuthHandler::post(HTTPRequest request_data) {
-    json j = request_data.json();
+void auth_handler::post(http_request request_data) {
+    nlohmann::json j = request_data.parse_json();
     string email = j["email"];
     string pass = j["password"];
-    
-    user c;
-    bool did_authenticate = c.authenticate(db,email,pass);
+    LOG(INFO) << "Received " << email << " : " << pass;
+    bool did_authenticate = user.authenticate(db,email,pass);
     if(did_authenticate) {
-        
+        LOG(INFO) << "Successfully authenticated";
+        user.create_session(db);
+        response.headers.emplace("session-token", user.current_session.token);
+        nlohmann::json user_data = user;
+        response.set_content(user_data);
+    } else {
+        LOG(INFO) << "Did not authenticate";
+        throw http_exception(403, "Authentication Failed");
     }
+}
+
+void auth_handler::put(http_request request_data) {
+    nlohmann::json j = request_data.parse_json();
+    string email = j["email"];
+    string pass = j["password"];
+    LOG(INFO) << "Received " << email << " : " << pass;
+    user.create(db,email,pass);
+    LOG(INFO) << "Successfully authenticated";
+    user.create_session(db);
+    response.headers.emplace("session-token", user.current_session.token);
+    nlohmann::json user_data = user;
+    response.set_content(user_data);
+    
 }

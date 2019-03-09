@@ -10,14 +10,18 @@
 #define auth_hpp
 
 #include <stdio.h>
+#include <curl/curl.h>
+
 #include "base_handler.h"
 #include "../utilities/requests.h"
 #include "../utilities/json.hpp"
-#include "../models/user.h"
 
-class AuthHandler : public BaseHandler {
-    void post(HTTPRequest request_data) override;
-    void get(HTTPRequest request_data) override;
+class auth_handler : public base_handler {
+public:
+    auth_handler() { requires_authentication = false; }
+    void post(http_request request_data) override;
+    void put(http_request request_data) override;
+    void get(http_request request_data) override;
 };
 
 #endif /* auth_hpp */

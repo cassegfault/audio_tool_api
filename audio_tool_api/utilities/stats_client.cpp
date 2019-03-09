@@ -31,7 +31,7 @@ stats_client::stats_client(const char * host, int port, const char * _stat_names
         LOG(ERROR) << "Could not create socket connection to stats host";
         return;
     }
-    cout << "Connecting to statsd" << endl;
+    LOG(INFO) << "Connecting to statsd";
     connect(fd, res->ai_addr, res->ai_addrlen);
     
     message = new char[4096];
@@ -57,9 +57,7 @@ void stats_client::decrement(const char * key) {
 }
 
 void stats_client::send(const char * key, int value, const char * type) {
-    
     sprintf(message, "%s%s:%d|%s", stat_namespace.c_str(), key, value, type);
-    cout << message << endl;
     size_t error = ::send(fd, message, strlen(message), 0);
     if (error < 0) {
         cerr << "Failed sending stat" << endl;

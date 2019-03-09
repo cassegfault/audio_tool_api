@@ -11,6 +11,11 @@
 
 #include <stdio.h>
 #include <string>
+#include <mutex>
+#include <glog/logging.h>
+#include <unordered_map>
+#include <vector>
+
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
 #include <cppconn/resultset_metadata.h>
@@ -20,7 +25,6 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
 #include <cppconn/resultset_metadata.h>
-#include <mutex>
 
 using namespace std;
 
@@ -51,6 +55,7 @@ namespace db {
         void set_param(uint32_t p);
         void set_param(int64_t p);
         void set_param(uint64_t p);
+        void set_param(size_t p);
         void set_param(double p);
         void set_param(bool p);
         void set_param(string p);
@@ -90,6 +95,8 @@ namespace db {
         // Get a single row back
         response_row row();
         bool did_execute = false;
+        
+        int row_count();
     private:
         // set_param calls are sequential, this tracks which paramater we are on
         int param_index = 1;
@@ -107,9 +114,44 @@ namespace db {
         Connection();
         ~Connection();
         
+        /*
+         The idea is to be able to set a map or list of key value pairs of parameters
+         db::Query query(string query_string, unordered_map<string,string> parameters) {
+            string new_query = "";
+            bool in_param_name = false;
+            string param_name = "";
+            char previous = '\0';
+            vector<string> params;
+            for(auto c : query_string){
+                if (c == '{' && previous == '?'){
+                    in_param_name = true;
+                } else if (in_param_name && c == '}'){
+                    in_param_name = false;
+                    params.emplace_back(param_name);
+                    param_name.clear();
+                } else if (in_param_name) {
+                    param_name += c;
+                } else {
+                    new_query += c;
+                }
+            }
+            
+            Query q(this, new_query.c_str());
+            
+            for(string param_name : params) {
+                
+                try {
+                    parameters.at(param_name))
+                } catch (){
+                }
+                q.set_param()
+            }
+            
+            return q;
+        }*/
         template<typename ...P>
-        db::Query query(const char * query_string, const P & ...parameters){
-            Query q(this, query_string);
+        db::Query query(string query_string, const P & ...parameters){
+            Query q(this, query_string.c_str());
             q.set_params(std::cref(parameters)...);
             return q;
         };
@@ -146,6 +188,14 @@ namespace db {
                 return query->results->getString(index);
             } else {
                 return query->results->getString(identifier);
+                
+            }
+        }
+        operator uint8_t *(){
+            if(index > -1){
+                return (uint8_t *)query->results->getString(index).c_str();
+            } else {
+                return (uint8_t *)query->results->getString(identifier).c_str();
                 
             }
         }
@@ -190,6 +240,13 @@ namespace db {
                 return query->results->getDouble(index);
             } else {
                 return query->results->getDouble(identifier);
+            }
+        }
+        operator size_t(){
+            if(index > -1){
+                return query->results->getUInt64(index);
+            } else {
+                return query->results->getUInt64(identifier);
             }
         }
         operator bool(){

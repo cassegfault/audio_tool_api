@@ -11,9 +11,13 @@
 
 #include <stdio.h>
 #include "base_handler.h"
+#include "../audio/audio_processor.h"
+#include "../models/file.h"
+#include <iostream>
+#include <fstream>
 
-class DecodeFileHandler : public BaseHandler {
-    void post(HTTPRequest request_data) override;
+class DecodeFileHandler : public base_handler {
+    void post(http_request request_data) override;
 };
 
 

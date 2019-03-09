@@ -21,8 +21,6 @@ config_holder::config_holder(string filename){
     
     for (auto& el : j.items()) {
         string key = el.key();
-        //auto value = el.value();
-        cout << key << ": "<< j[key] << " - " << j[key].type_name() << endl;
         if (strcmp(key.c_str(),"server_host") == 0) {
             server_host = j[key];
         } else if (strcmp(key.c_str(),"server_port") == 0) {

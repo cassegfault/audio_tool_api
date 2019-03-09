@@ -13,6 +13,8 @@
 #include "routes.h"
 #include "http_worker.h"
 #include "http_exception.h"
+#include "../utilities/stats_client.h"
+#include "../utilities/timer.h"
 
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
@@ -26,6 +28,8 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <chrono>
+
 
 namespace ip = boost::asio::ip;         // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio.hpp>
@@ -82,7 +86,7 @@ private:
     
     void check_deadline();
     
-    unique_ptr<BaseHandler> find_route(string path);
+    unique_ptr<base_handler> find_route(string path);
 };
 
 #endif /* http_worker_h */
