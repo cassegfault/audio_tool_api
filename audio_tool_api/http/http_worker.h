@@ -1,92 +1,64 @@
 //
-//  worker.hpp
+//  http_worker.hpp
 //  audio_tool_api
 //
-//  Created by Chris Pauley on 12/1/18.
-//  Copyright © 2018 Chris Pauley. All rights reserved.
+//  Created by Chris Pauley on 3/9/19.
+//  Copyright © 2019 Chris Pauley. All rights reserved.
 //
 
-#ifndef http_worker_h
-#define http_worker_h
+#ifndef http_worker_async_hpp
+#define http_worker_async_hpp
 
-#include "fields_alloc.h"
-#include "routes.h"
-#include "http_worker.h"
-#include "http_exception.h"
-#include "../utilities/stats_client.h"
-#include "../utilities/timer.h"
+#include <stdio.h>
 
-#include <boost/beast/core.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/optional/optional.hpp>
+
 #include <boost/beast/http.hpp>
-#include <boost/beast/version.hpp>
-#include <boost/asio.hpp>
-#include <boost/filesystem.hpp>
-#include <chrono>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <list>
-#include <memory>
-#include <string>
-#include <chrono>
 
+#include "http/fields_alloc.h"
+#include "http/http_connection.h"
+#include "http/http_exception.h"
+#include "http/routes.h"
+#include "handlers/base_handler.h"
+#include "utilities/stats_client.h"
+#include "utilities/timer.h"
 
-namespace ip = boost::asio::ip;         // from <boost/asio.hpp>
-using tcp = boost::asio::ip::tcp;       // from <boost/asio.hpp>
 namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
+using namespace std;
 
-class HTTPWorker {
+class http_worker {
 public:
-    HTTPWorker(HTTPWorker const&) = delete;
-    HTTPWorker& operator=(HTTPWorker const&) = delete;
+    http_worker(boost::asio::io_context & _work_thread_context): work_thread_context(_work_thread_context) {};
+    ~http_worker(){};
     
-    HTTPWorker(tcp::acceptor& acceptor) : acceptor_(acceptor) { }
-    
-    void start() {
-        accept();
-        check_deadline();
-    }
-    
+    void start(http_connection & _conn);
+    bool has_finished() { return _has_finished; }
 private:
-    using alloc_t = fields_alloc<char>;
-    using request_body_t = http::string_body;
+    boost::optional<http_connection &> conn;
+    boost::asio::io_context & work_thread_context;
+    bool _has_finished = true;
     
-    // The acceptor used to listen for incoming connections.
-    tcp::acceptor& acceptor_;
+    // I would like to replace the http stuff with either a smaller http parser or my own
+        using alloc_t = fields_alloc<char>;
+        using body_t = http::string_body;
+        using fields_t = http::basic_fields<alloc_t>;
+        // For reads
+        boost::beast::flat_static_buffer<8192> buffer_;
+        //http::request_parser<body_t, alloc_t> parser_;
+        alloc_t alloc_{8192};
     
-    // The socket for the currently connected client.
-    tcp::socket socket_{acceptor_.get_executor().context()};
-    
-    // The buffer for performing reads
-    boost::beast::flat_static_buffer<8192> buffer_;
-    
-    // The allocator used for the fields in the request and reply.
-    alloc_t alloc_{8192};
-    
-    // The parser for reading the requests
-    boost::optional<http::request_parser<request_body_t, alloc_t>> parser_;
-    
-    // The timer putting a time limit on requests.
-    boost::asio::basic_waitable_timer<std::chrono::steady_clock> request_deadline_{
-        acceptor_.get_executor().context(), (std::chrono::steady_clock::time_point::max)()};
-    
-    // The string-based response message.
-    boost::optional<http::response<http::string_body, http::basic_fields<alloc_t>>> string_response_;
-    
-    // The string-based response serializer.
-    boost::optional<http::response_serializer<http::string_body, http::basic_fields<alloc_t>>> string_serializer_;
-    
-    void accept();
-    
-    void read_request();
-    
-    void process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req);
-    
-    void send_bad_response(http::status status, std::string const& error);
-    
-    void check_deadline();
+        // For writes
+        boost::optional<http::response<body_t, fields_t>> response;
+        boost::optional<http::response_serializer<body_t, fields_t>> serializer;
     
     unique_ptr<base_handler> find_route(string path);
+    
+    void read();
+    void process(http::request<body_t, fields_t> const & req);
+    void build_response(HTTPResponse & handler_result);
+    void build_response(http::status error_code, string body);
+    void write();
 };
 
-#endif /* http_worker_h */
+#endif /* http_worker_hpp */

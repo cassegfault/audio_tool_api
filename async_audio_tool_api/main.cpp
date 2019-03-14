@@ -7,12 +7,13 @@
 //
 
 #include "utilities/config.h"
-#include "http/fields_alloc.h"
 
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio.hpp>
 #include <boost/lockfree/queue.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
+
 
 #include <thread>
 #include <iostream>
@@ -22,29 +23,30 @@ using namespace std;
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 namespace http = boost::beast::http;
 
-void accept(list<tcp::socket> & sockets, tcp::acceptor & acceptor) {
-    acceptor.async_accept(acceptor.get_executor().context(), [&sockets,&acceptor](boost::system::error_code &err){
-        sockets.push_back(tcp::socket{acceptor.get_executor().context()});
-        accept(sockets,acceptor);
+void accept(/*list<tcp::socket> & sockets, */tcp::acceptor & acceptor) {
+    acceptor.async_accept(acceptor.get_executor().context(), [/*&sockets,*/&acceptor](boost::system::error_code &err){
+        //sockets.push_back(tcp::socket{acceptor.get_executor().context()});
+        accept(acceptor);
     });
 }
 
 int main(int argc, const char * argv[]) {
     auto const address = boost::asio::ip::make_address(config()->server_host);
     auto const port = static_cast<unsigned short>(config()->server_port);
-    boost::asio::io_context ioc;
+    boost::asio::io_context ioc, thread_ioc;
+    
     tcp::acceptor acceptor{ioc, {address, port}};
     list<tcp::socket> sockets;
     //boost::lockfree::queue<string> sockets;
     
-    
-    accept(sockets,acceptor);
+    accept(/*sockets,*/acceptor);
     
     vector<thread> threads;
     bool run_threads = true;
     for(int x=0; x < 1; x++){
-        threads.emplace_back([&ioc, &run_threads, &acceptor, &sockets](){
+        threads.emplace_back([&](){
             while(run_threads) {
+                thread_ioc.poll();
                 if (!sockets.empty()) {
                     tcp::socket sock{std::move(sockets.front())};
                     sockets.pop_front();

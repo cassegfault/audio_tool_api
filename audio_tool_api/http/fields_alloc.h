@@ -15,7 +15,7 @@
 #include <memory>
 #include <stdexcept>
 
-namespace detail {
+namespace fields_detail {
     
     struct static_pool
     {
@@ -101,7 +101,7 @@ namespace detail {
 template<class T>
 struct fields_alloc
 {
-    detail::static_pool* pool_;
+    fields_detail::static_pool* pool_;
     
 public:
     using value_type = T;
@@ -128,7 +128,7 @@ public:
     
     explicit
     fields_alloc(std::size_t size)
-    : pool_(&detail::static_pool::construct(size))
+    : pool_(&fields_detail::static_pool::construct(size))
     {
     }
     
