@@ -16,7 +16,7 @@
 using namespace std;
 using tcp = boost::asio::ip::tcp;
 
-class http_connection {
+class http_connection : public std::enable_shared_from_this<http_connection> {
 public:
     http_connection(shared_ptr<tcp::socket> _socket): socket(std::move(_socket)), has_socket(true) {};
     http_connection(){ };
