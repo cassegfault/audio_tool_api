@@ -32,10 +32,10 @@ public:
     http_worker(boost::asio::io_context & _work_thread_context): work_thread_context(_work_thread_context) {};
     ~http_worker(){};
     
-    void start(http_connection & _conn);
+    void start(shared_ptr<http_connection> _conn);
     bool has_finished() { return _has_finished; }
 private:
-    boost::optional<http_connection &> conn;
+    shared_ptr<http_connection> conn;
     boost::asio::io_context & work_thread_context;
     bool _has_finished = true;
     

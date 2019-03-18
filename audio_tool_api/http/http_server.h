@@ -38,9 +38,9 @@ private:
     boost::asio::io_context ioc;
     
     vector<shared_ptr<tcp::socket> > connections;
-    moodycamel::ConcurrentQueue<http_connection> q;
+    vector<shared_ptr<http_connection>> conn_objs;
+    moodycamel::ConcurrentQueue<shared_ptr<http_connection>> q;
     vector<http_work_thread> threads;
-    tcp::socket socket{acceptor.get_executor().context()};
 };
 
 #endif /* http_server_hpp */

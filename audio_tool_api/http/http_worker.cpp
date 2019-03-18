@@ -9,11 +9,11 @@
 #include "http_worker.h"
 
 
-void http_worker::start(http_connection &_conn) {
+void http_worker::start(shared_ptr<http_connection> _conn) {
     if (!_has_finished) {
         throw new runtime_error("Starting on a worker that isn't finished");
     }
-    conn = _conn;
+    conn = _conn->get_ptr();
     _has_finished = false;
     read();
 }
@@ -23,6 +23,7 @@ void http_worker::read(){
     http::request_parser<body_t, alloc_t> parser_(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
     http::async_read(*conn->socket, buffer_, parser_, [&,this](boost::beast::error_code ec, std::size_t) {
         if(ec){
+            cout << ec.message() << endl; 
             _has_finished = true;
         } else {
             process(parser_.get());

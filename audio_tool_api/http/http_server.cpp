@@ -28,15 +28,19 @@ void http_server::start(){
 }
 
 void http_server::accept(){
-    acceptor->async_accept(socket, [this](boost::beast::error_code err){
+    tcp::socket sock{acceptor->get_executor().context()};
+    acceptor->async_accept(sock, [this](boost::beast::error_code err){
         if(err){
             
         } else {
             // https://stackoverflow.com/questions/43830917/boost-asio-async-reading-and-writing-to-socket-using-queue
             // create the socket inplace with the http_connection, use shared_ptr<http_connection>
-            // list to queue connections, 
-            http_connection conn(std::move(std::make_shared(&socket)));
-            q.enqueue(conn);
+            // list to queue connections,
+            shared_ptr<tcp::socket> socket_ptr(std::make_shared<tcp::socket>(acceptor->get_executor().context()));
+            connections.push_back(socket_ptr);
+            shared_ptr<http_connection> conn = make_shared<http_connection>(socket_ptr);
+            conn_objs.push_back(conn->get_ptr());
+            q.enqueue(conn->get_ptr());
         }
         accept();
     });

@@ -17,7 +17,6 @@
 		D62F0AF621B483FE0085A671 /* libavdevice.58.5.100.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D62F0AF421B483FD0085A671 /* libavdevice.58.5.100.dylib */; };
 		D62F0AF721B483FE0085A671 /* libavutil.56.22.100.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D62F0AF521B483FE0085A671 /* libavutil.56.22.100.dylib */; };
 		D6437E2421E28ECA00651678 /* stats_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6437E2221E28ECA00651678 /* stats_client.cpp */; };
-		D6437E2F21E42B1500651678 /* libmysqlcppconn.7.1.1.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D6437E2E21E42B1500651678 /* libmysqlcppconn.7.1.1.8.dylib */; };
 		D6437E3321E4D17B00651678 /* libglog.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D6437E3221E4D17B00651678 /* libglog.0.dylib */; };
 		D6437E3521E4D51E00651678 /* config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6437E3421E4D51E00651678 /* config.cpp */; };
 		D64F642521E6204300A1C99C /* auth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F642321E6204300A1C99C /* auth.cpp */; };
@@ -29,6 +28,7 @@
 		D64F644F21EA582100A1C99C /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F644D21EA582100A1C99C /* base64.cpp */; };
 		D64F645821EAE4D000A1C99C /* user.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F645721EAE4D000A1C99C /* user.cpp */; };
 		D6531AB421B44CB7005034F8 /* decode_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6531AB221B44CB7005034F8 /* decode_file.cpp */; };
+		D669116F223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D669116E223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib */; };
 		D67E369E21B2C8B1008BE6F9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67E369D21B2C8B1008BE6F9 /* main.cpp */; };
 		D67E36AB21B2CA32008BE6F9 /* libssl.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36A921B2CA32008BE6F9 /* libssl.1.0.0.dylib */; };
 		D67E36AC21B2CA32008BE6F9 /* libcrypto.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36AA21B2CA32008BE6F9 /* libcrypto.1.0.0.dylib */; };
@@ -158,6 +158,7 @@
 		D6531AB121B42FAA005034F8 /* routes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = routes.h; sourceTree = "<group>"; };
 		D6531AB221B44CB7005034F8 /* decode_file.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = decode_file.cpp; sourceTree = "<group>"; };
 		D6531AB321B44CB7005034F8 /* decode_file.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = decode_file.h; sourceTree = "<group>"; };
+		D669116E223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlcppconn.7.1.1.9.dylib; path = "../../../../usr/local/Cellar/mysql-connector-c++/1.1.9_2/lib/libmysqlcppconn.7.1.1.9.dylib"; sourceTree = "<group>"; };
 		D67E369A21B2C8B1008BE6F9 /* audio_tool_api */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = audio_tool_api; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67E369D21B2C8B1008BE6F9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		D67E36A521B2C9A3008BE6F9 /* libnghttp2.14.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libnghttp2.14.dylib; path = ../../../../usr/local/Cellar/nghttp2/1.35.0_1/lib/libnghttp2.14.dylib; sourceTree = "<group>"; };
@@ -211,9 +212,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D669116F223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib in Frameworks */,
 				D64F642A21E6380500A1C99C /* libcurl.4.dylib in Frameworks */,
 				D6437E3321E4D17B00651678 /* libglog.0.dylib in Frameworks */,
-				D6437E2F21E42B1500651678 /* libmysqlcppconn.7.1.1.8.dylib in Frameworks */,
 				D6C269F121BB1275009D9D01 /* libswscale.5.3.100.dylib in Frameworks */,
 				D6C269F221BB1275009D9D01 /* libswresample.3.3.100.dylib in Frameworks */,
 				D62F0AF621B483FE0085A671 /* libavdevice.58.5.100.dylib in Frameworks */,
@@ -340,6 +341,7 @@
 		D67E36A421B2C9A3008BE6F9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D669116E223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib */,
 				D64F642921E6380500A1C99C /* libcurl.4.dylib */,
 				D6437E3221E4D17B00651678 /* libglog.0.dylib */,
 				D6437E2E21E42B1500651678 /* libmysqlcppconn.7.1.1.8.dylib */,
@@ -705,12 +707,11 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.66.0/lib,
+					/usr/local/Cellar/boost/1.68.0_1/lib,
 					/usr/local/Cellar/openssl/1.0.2q/lib,
-					/usr/local/Cellar/boost/1.68.0/lib,
-					/usr/local/Cellar/ffmpeg/4.1/lib,
-					"/usr/local/Cellar/mysql-connector-c++/1.1.8/lib",
-					/usr/local/Cellar/glog/0.3.4_1/lib,
+					/usr/local/Cellar/ffmpeg/4.1.1/lib,
+					"/usr/local/Cellar/mysql-connector-c++/1.1.9_2/lib",
+					/usr/local/Cellar/glog/0.3.5_3/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -732,12 +733,11 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.66.0/lib,
+					/usr/local/Cellar/boost/1.68.0_1/lib,
 					/usr/local/Cellar/openssl/1.0.2q/lib,
-					/usr/local/Cellar/boost/1.68.0/lib,
-					/usr/local/Cellar/ffmpeg/4.1/lib,
-					"/usr/local/Cellar/mysql-connector-c++/1.1.8/lib",
-					/usr/local/Cellar/glog/0.3.4_1/lib,
+					/usr/local/Cellar/ffmpeg/4.1.1/lib,
+					"/usr/local/Cellar/mysql-connector-c++/1.1.9_2/lib",
+					/usr/local/Cellar/glog/0.3.5_3/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

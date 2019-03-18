@@ -24,7 +24,7 @@
 using namespace std;
 
 class http_work_thread {
-    using q_type =moodycamel::ConcurrentQueue<http_connection>;
+    using q_type =moodycamel::ConcurrentQueue<shared_ptr<http_connection>>;
 public:
     http_work_thread(q_type & q) : _is_running(false), _thread(), _q(q), poll_timer(work_thread_context) {};
     http_work_thread(http_work_thread && other): _is_running(bool(other._is_running)), _thread(std::move(other._thread)), _q(other._q), poll_timer(work_thread_context) {
@@ -47,7 +47,7 @@ private:
     q_type & _q;
     boost::asio::io_context work_thread_context{1}; // single threaded io_context (this thread)
     boost::asio::deadline_timer poll_timer;
-    vector<http_connection> connections;
+    vector<shared_ptr<http_connection>> connections;
 };
 
 #endif /* http_work_thread_hpp */

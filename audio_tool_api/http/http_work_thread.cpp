@@ -22,7 +22,7 @@ void http_work_thread::thread_runner(){
 }
 
 void http_work_thread::run_loop(){
-    http_connection conn;
+    shared_ptr<http_connection> conn;
     
     vector<http_worker>::iterator worker_it;
     
@@ -42,7 +42,7 @@ void http_work_thread::run_loop(){
     }
     if(_is_running && worker_it != workers.end() && did_connect){
         // we have a connection, move it into ownership of this thread
-        connections.emplace_back(std::move(conn));
+        connections.emplace_back(conn->get_ptr());
         worker_it->start(connections.back());
     }
     

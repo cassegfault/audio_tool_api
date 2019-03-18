@@ -18,16 +18,18 @@ using tcp = boost::asio::ip::tcp;
 
 class http_connection : public std::enable_shared_from_this<http_connection> {
 public:
-    http_connection(shared_ptr<tcp::socket> _socket): socket(std::move(_socket)), has_socket(true) {};
+    http_connection(shared_ptr<tcp::socket> _socket): socket(_socket), has_socket(true) {};
     http_connection(){ };
     ~http_connection(){
         if(has_socket){
             cout << "socket destructed" << endl;
         }
+        has_socket = false;
         if(socket != nullptr)
             socket->close();
     }
     shared_ptr<tcp::socket> socket;
+    shared_ptr<http_connection> get_ptr() { return shared_from_this(); }
 private:
     bool has_socket = false;
 };
