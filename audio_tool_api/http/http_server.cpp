@@ -28,19 +28,28 @@ void http_server::start(){
 }
 
 void http_server::accept(){
-    tcp::socket sock{acceptor->get_executor().context()};
-    acceptor->async_accept(sock, [this](boost::beast::error_code err){
+    //tcp::socket sock(acceptor->get_io_context());
+    //active_connection.emplace(make_shared<tcp::socket>(acceptor->get_io_context()));
+    //active_connection.swap(new shared_ptr<tcp::socket>(acceptor->get_executor().context()));
+    //active_connection.emplace(new shared_ptr<tcp::socket>(acceptor->get_executor().context()));
+    //active_connection.swap(new tcp::socket(acceptor->get_io_context()));
+    active_connection = make_shared<tcp::socket>(acceptor->get_io_context());
+    
+    
+    acceptor->async_accept(*active_connection, [this](boost::beast::error_code err){
         if(err){
-            
+            cout << "error accepting: " << err.message() <<endl;
         } else {
             // https://stackoverflow.com/questions/43830917/boost-asio-async-reading-and-writing-to-socket-using-queue
             // create the socket inplace with the http_connection, use shared_ptr<http_connection>
             // list to queue connections,
-            shared_ptr<tcp::socket> socket_ptr(std::make_shared<tcp::socket>(acceptor->get_executor().context()));
-            connections.push_back(socket_ptr);
-            shared_ptr<http_connection> conn = make_shared<http_connection>(socket_ptr);
-            conn_objs.push_back(conn->get_ptr());
-            q.enqueue(conn->get_ptr());
+            //shared_ptr<tcp::socket> socket_ptr(std::make_shared<tcp::socket>(*active_connection));
+            
+            //connections.push_back(active_connection);
+            // active connection is getting changed before we're able to handle a response from it
+            shared_ptr<tcp::socket> new_shared(active_connection);
+            connections.emplace_back(new_shared);
+            q.enqueue(connections.back());
         }
         accept();
     });

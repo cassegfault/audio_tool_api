@@ -9,28 +9,40 @@
 #include "http_worker.h"
 
 
-void http_worker::start(shared_ptr<http_connection> _conn) {
+void http_worker::start(shared_ptr<tcp::socket> _conn) {
     if (!_has_finished) {
         throw new runtime_error("Starting on a worker that isn't finished");
     }
-    conn = _conn->get_ptr();
+    //conn.swap(_conn);
+    conn = _conn;
+    cout << "Worker connection uses: " << conn.use_count() << endl;
     _has_finished = false;
     read();
 }
 
 void http_worker::read(){
-    //parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    http::request_parser<body_t, alloc_t> parser_(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    http::async_read(*conn->socket, buffer_, parser_, [&,this](boost::beast::error_code ec, std::size_t) {
+    parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    //http::request_parser<body_t, alloc_t> parser_(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    http::async_read(*conn, buffer_, *parser_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error));
+    /*http::read(*conn, buffer_, parser_);
+    process(parser_.get());
+    /*http::async_read(*conn, buffer_, parser_, [&,this](boost::beast::error_code ec, std::size_t) {
         if(ec){
             cout << ec.message() << endl; 
             _has_finished = true;
         } else {
             process(parser_.get());
         }
-    });
+    });*/
 }
-
+void http_worker::read_handler(boost::beast::error_code & ec){
+    if(ec){
+        cout << ec.message() << endl;
+        _has_finished = true;
+    } else {
+        process((*parser_).get());
+    }
+}
 void http_worker::process(http::request<body_t, fields_t> const & req){
     LOG(INFO) << req.target();
     stats()->increment("requests");
@@ -122,6 +134,7 @@ void http_worker::build_response(HTTPResponse & handler_result){
     response->prepare_payload();
     
     serializer.emplace(*response);
+    write();
 }
 
 void http_worker::build_response(http::status status, string body){
@@ -138,15 +151,28 @@ void http_worker::build_response(http::status status, string body){
     response->prepare_payload();
     
     serializer.emplace(*response);
+    write();
 }
 
 void http_worker::write() {
-    http::async_write(*conn->socket, *serializer, [this](boost::beast::error_code ec, std::size_t) {
-        conn->socket->shutdown(tcp::socket::shutdown_send, ec);
+    /*http::write(*conn, *serializer);
+    conn->shutdown(tcp::socket::shutdown_send);
+    serializer.reset();
+    response.reset();
+    _has_finished = true;
+    /*http::async_write(*conn, *serializer, [this](boost::beast::error_code ec, std::size_t) {
+        conn->shutdown(tcp::socket::shutdown_send, ec);
         serializer.reset();
         response.reset();
         _has_finished = true;
-    });
+    });*/
+    http::async_write(*conn,*serializer,boost::bind(&http_worker::write_handler, this,boost::asio::placeholders::error));
+}
+void http_worker::write_handler(boost::beast::error_code & ec){
+    conn->shutdown(tcp::socket::shutdown_send, ec);
+    serializer.reset();
+    response.reset();
+    _has_finished = true;
 }
 
 unique_ptr<base_handler> http_worker::find_route(string path) {

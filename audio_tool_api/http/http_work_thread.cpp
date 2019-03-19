@@ -11,7 +11,9 @@
 void http_work_thread::start() {
     _is_running = true;
     for(int x = 0; x < num_workers; x++){
-        workers.emplace_back(work_thread_context);
+        //workers.emplace_back(work_thread_context)
+        http_worker worker(work_thread_context);
+        workers.push_back(worker);
     }
     _thread = thread(&http_work_thread::thread_runner, this);
 }
@@ -22,7 +24,7 @@ void http_work_thread::thread_runner(){
 }
 
 void http_work_thread::run_loop(){
-    shared_ptr<http_connection> conn;
+    shared_ptr<tcp::socket> * conn = new shared_ptr<tcp::socket>();
     
     vector<http_worker>::iterator worker_it;
     
@@ -36,14 +38,15 @@ void http_work_thread::run_loop(){
     }
     // should we try and dequeue here? What if we're hoarding connections? possibly
     bool did_connect = false;
-    if(_q.try_dequeue(conn)){
+    if(_q.try_dequeue(*conn)){
         did_connect = true;
-        cout << have_worker <<endl;
+        cout << "Connection uses: " << conn->use_count() << endl;
     }
     if(_is_running && worker_it != workers.end() && did_connect){
         // we have a connection, move it into ownership of this thread
-        connections.emplace_back(conn->get_ptr());
-        worker_it->start(connections.back());
+        //connections.emplace_back(conn->get_ptr());
+        //worker_it->start(connections.back());
+        worker_it->start(*conn);
     }
     
     // Continuously feed our timer unless the thread has been shut down. This keeps the io_context (and the thread) open

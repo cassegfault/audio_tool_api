@@ -35,11 +35,11 @@ public:
 private:
     void accept();
     boost::optional<tcp::acceptor> acceptor;
+    shared_ptr<tcp::socket> active_connection;
     boost::asio::io_context ioc;
     
     vector<shared_ptr<tcp::socket> > connections;
-    vector<shared_ptr<http_connection>> conn_objs;
-    moodycamel::ConcurrentQueue<shared_ptr<http_connection>> q;
+    moodycamel::ConcurrentQueue<shared_ptr<tcp::socket>> q;
     vector<http_work_thread> threads;
 };
 

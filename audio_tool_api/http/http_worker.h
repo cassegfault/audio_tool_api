@@ -12,7 +12,9 @@
 #include <stdio.h>
 
 #include <boost/asio/io_context.hpp>
+#include <boost/asio/placeholders.hpp>
 #include <boost/optional/optional.hpp>
+#include <boost/bind.hpp>
 
 #include <boost/beast/http.hpp>
 
@@ -25,17 +27,19 @@
 #include "utilities/timer.h"
 
 namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
+using tcp = boost::asio::ip::tcp;
 using namespace std;
 
 class http_worker {
 public:
-    http_worker(boost::asio::io_context & _work_thread_context): work_thread_context(_work_thread_context) {};
+    http_worker(boost::asio::io_context & _work_thread_context): work_thread_context(_work_thread_context), parser_(boost::none) {};
+    http_worker(const http_worker& other): work_thread_context(other.work_thread_context), parser_(boost::none) {}
     ~http_worker(){};
     
-    void start(shared_ptr<http_connection> _conn);
+    void start(shared_ptr<tcp::socket> _conn);
     bool has_finished() { return _has_finished; }
 private:
-    shared_ptr<http_connection> conn;
+    shared_ptr<tcp::socket> conn;
     boost::asio::io_context & work_thread_context;
     bool _has_finished = true;
     
@@ -45,7 +49,7 @@ private:
         using fields_t = http::basic_fields<alloc_t>;
         // For reads
         boost::beast::flat_static_buffer<8192> buffer_;
-        //http::request_parser<body_t, alloc_t> parser_;
+        boost::optional<http::request_parser<body_t, alloc_t>> parser_;
         alloc_t alloc_{8192};
     
         // For writes
@@ -55,6 +59,8 @@ private:
     unique_ptr<base_handler> find_route(string path);
     
     void read();
+    void read_handler(boost::beast::error_code & ec);
+    void write_handler(boost::beast::error_code & ec);
     void process(http::request<body_t, fields_t> const & req);
     void build_response(HTTPResponse & handler_result);
     void build_response(http::status error_code, string body);
