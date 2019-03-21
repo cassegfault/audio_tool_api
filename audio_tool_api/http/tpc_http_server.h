@@ -24,10 +24,10 @@ using namespace std;
 
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
-class st_http_server {
+class tpc_http_server {
 public:
-    st_http_server(): ioc(1), is_running(false) {};
-    ~st_http_server(){};
+    tpc_http_server(): ioc(1), is_running(false) {};
+    ~tpc_http_server(){};
     
     void start();
     void run() {
@@ -48,7 +48,7 @@ private:
     
     vector<shared_ptr<tcp::socket> > connections;
     moodycamel::ConcurrentQueue<shared_ptr<tcp::socket>> q;
-    vector<http_work_thread> threads;
+    vector<thread> threads;
     bool is_running;
 };
 

@@ -72,6 +72,9 @@
 		D669119C22411C4E000E2690 /* libcrypto.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36AA21B2CA32008BE6F9 /* libcrypto.1.0.0.dylib */; };
 		D669119D22411C4E000E2690 /* libboost_coroutine.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36AE21B2ED3F008BE6F9 /* libboost_coroutine.dylib */; };
 		D66911A322411C5B000E2690 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D69B837D22328FF100A5EDC0 /* main.cpp */; };
+		D66911A422419663000E2690 /* st_http_worker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67E36C521B338D5008BE6F9 /* st_http_worker.cpp */; };
+		D66911A72241985F000E2690 /* st_http_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D66911A52241985F000E2690 /* st_http_server.cpp */; };
+		D66911AA22425D9C000E2690 /* tpc_http_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D66911A822425D9C000E2690 /* tpc_http_server.cpp */; };
 		D67E369E21B2C8B1008BE6F9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67E369D21B2C8B1008BE6F9 /* main.cpp */; };
 		D67E36AB21B2CA32008BE6F9 /* libssl.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36A921B2CA32008BE6F9 /* libssl.1.0.0.dylib */; };
 		D67E36AC21B2CA32008BE6F9 /* libcrypto.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36AA21B2CA32008BE6F9 /* libcrypto.1.0.0.dylib */; };
@@ -163,6 +166,10 @@
 		D6531AB321B44CB7005034F8 /* decode_file.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = decode_file.h; sourceTree = "<group>"; };
 		D669116E223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlcppconn.7.1.1.9.dylib; path = "../../../../usr/local/Cellar/mysql-connector-c++/1.1.9_2/lib/libmysqlcppconn.7.1.1.9.dylib"; sourceTree = "<group>"; };
 		D66911A222411C4E000E2690 /* audio_tool_api copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "audio_tool_api copy"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D66911A52241985F000E2690 /* st_http_server.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = st_http_server.cpp; sourceTree = "<group>"; };
+		D66911A62241985F000E2690 /* st_http_server.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = st_http_server.h; sourceTree = "<group>"; };
+		D66911A822425D9C000E2690 /* tpc_http_server.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tpc_http_server.cpp; sourceTree = "<group>"; };
+		D66911A922425D9C000E2690 /* tpc_http_server.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tpc_http_server.h; sourceTree = "<group>"; };
 		D67E369A21B2C8B1008BE6F9 /* audio_tool_api */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = audio_tool_api; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67E369D21B2C8B1008BE6F9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		D67E36A521B2C9A3008BE6F9 /* libnghttp2.14.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libnghttp2.14.dylib; path = ../../../../usr/local/Cellar/nghttp2/1.35.0_1/lib/libnghttp2.14.dylib; sourceTree = "<group>"; };
@@ -176,8 +183,8 @@
 		D67E36B621B2FADD008BE6F9 /* libSystem.B.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSystem.B.dylib; path = ../../../../usr/lib/libSystem.B.dylib; sourceTree = "<group>"; };
 		D67E36C021B32515008BE6F9 /* base_handler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = base_handler.cpp; sourceTree = "<group>"; };
 		D67E36C121B32515008BE6F9 /* base_handler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = base_handler.h; sourceTree = "<group>"; };
-		D67E36C521B338D5008BE6F9 /* old_http_worker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = old_http_worker.cpp; sourceTree = "<group>"; };
-		D67E36C621B338D5008BE6F9 /* old_http_worker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = old_http_worker.h; sourceTree = "<group>"; };
+		D67E36C521B338D5008BE6F9 /* st_http_worker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = st_http_worker.cpp; sourceTree = "<group>"; };
+		D67E36C621B338D5008BE6F9 /* st_http_worker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = st_http_worker.h; sourceTree = "<group>"; };
 		D67E36C821B33975008BE6F9 /* fields_alloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fields_alloc.h; sourceTree = "<group>"; };
 		D69B8373222EA45E00A5EDC0 /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
 		D69B8374222EA45E00A5EDC0 /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
@@ -381,8 +388,8 @@
 				D6531AAF21B42891005034F8 /* http_request.h */,
 				D62F0AE921B45AF50085A671 /* http_response.cpp */,
 				D62F0AEA21B45AF50085A671 /* http_response.h */,
-				D67E36C521B338D5008BE6F9 /* old_http_worker.cpp */,
-				D67E36C621B338D5008BE6F9 /* old_http_worker.h */,
+				D67E36C521B338D5008BE6F9 /* st_http_worker.cpp */,
+				D67E36C621B338D5008BE6F9 /* st_http_worker.h */,
 				D6C269ED21BAE14A009D9D01 /* multipart_parser.c */,
 				D6C269EC21BAE14A009D9D01 /* multipart_parser.h */,
 				D6531AB121B42FAA005034F8 /* routes.h */,
@@ -394,6 +401,10 @@
 				D6D2885122348B5D005B47AA /* http_worker.h */,
 				D6CB6F1D2237D3530095EA6B /* http_server.cpp */,
 				D6CB6F1E2237D3530095EA6B /* http_server.h */,
+				D66911A52241985F000E2690 /* st_http_server.cpp */,
+				D66911A62241985F000E2690 /* st_http_server.h */,
+				D66911A822425D9C000E2690 /* tpc_http_server.cpp */,
+				D66911A922425D9C000E2690 /* tpc_http_server.h */,
 			);
 			path = http;
 			sourceTree = "<group>";
@@ -559,8 +570,10 @@
 				D67E36C221B32515008BE6F9 /* base_handler.cpp in Sources */,
 				D64F645821EAE4D000A1C99C /* user.cpp in Sources */,
 				D6F4010E21F3BBD7009EC8E3 /* project.cpp in Sources */,
+				D66911AA22425D9C000E2690 /* tpc_http_server.cpp in Sources */,
 				D64F644C21EA473400A1C99C /* http_exception.cpp in Sources */,
 				D67E369E21B2C8B1008BE6F9 /* main.cpp in Sources */,
+				D66911A72241985F000E2690 /* st_http_server.cpp in Sources */,
 				D64F643221E764BF00A1C99C /* user.cpp in Sources */,
 				D6437E3521E4D51E00651678 /* config.cpp in Sources */,
 				D6437E2421E28ECA00651678 /* stats_client.cpp in Sources */,
@@ -580,6 +593,7 @@
 				D6D2885222348B5D005B47AA /* http_worker.cpp in Sources */,
 				D69B8375222EA45E00A5EDC0 /* test.cpp in Sources */,
 				D64F643821E7681300A1C99C /* database.cpp in Sources */,
+				D66911A422419663000E2690 /* st_http_worker.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -86,7 +86,6 @@ private:
     void sync_read();
     
     void process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req);
-    void sync_process(http::request<request_body_t, http::basic_fields<alloc_t>> const& req);
     
     void write();
     void sync_write();

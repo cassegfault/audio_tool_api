@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/main.cpp"
-            timestampString = "574692676.509917"
+            timestampString = "574775431.248477"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "51"
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.241044"
+            timestampString = "574775431.248589"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
             landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
             landmarkType = "7">
          </BreakpointContent>
@@ -650,11 +650,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.241545"
+            timestampString = "574775431.249264"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "95"
-            endingLineNumber = "95"
+            startingLineNumber = "85"
+            endingLineNumber = "85"
             landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
             landmarkType = "7">
          </BreakpointContent>
@@ -666,11 +666,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.241641"
+            timestampString = "574775431.249506"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "98"
-            endingLineNumber = "98"
+            startingLineNumber = "88"
+            endingLineNumber = "88"
             landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
             landmarkType = "7">
          </BreakpointContent>
@@ -682,11 +682,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.2417229"
+            timestampString = "574775431.249712"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
             landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
             landmarkType = "7">
             <Locations>
@@ -762,11 +762,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.24183"
+            timestampString = "574775431.24992"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "114"
-            endingLineNumber = "114"
+            startingLineNumber = "104"
+            endingLineNumber = "104"
             landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
             landmarkType = "7">
          </BreakpointContent>
@@ -778,11 +778,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.2419111"
+            timestampString = "574775431.2501349"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
             landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
             landmarkType = "7">
          </BreakpointContent>
@@ -794,7 +794,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/handlers/test.cpp"
-            timestampString = "574720031.241991"
+            timestampString = "574775431.250348"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "13"
@@ -806,31 +806,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.242031"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "25"
-            endingLineNumber = "25"
-            landmarkName = "http_worker::read()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/handlers/test.cpp"
-            timestampString = "574720031.242108"
+            timestampString = "574775431.250409"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
             landmarkName = "test_handler::get(http_request request_data)"
             landmarkType = "7">
          </BreakpointContent>
@@ -842,7 +826,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/handlers/test.cpp"
-            timestampString = "574720031.2421449"
+            timestampString = "574775431.2504801"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "14"
@@ -858,7 +842,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_server.cpp"
-            timestampString = "574720031.242182"
+            timestampString = "574775431.2505471"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "42"
@@ -874,7 +858,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_server.cpp"
-            timestampString = "574720031.242618"
+            timestampString = "574775431.250775"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "45"
@@ -890,11 +874,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_work_thread.cpp"
-            timestampString = "574720031.242972"
+            timestampString = "574775431.25098"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "29"
-            endingLineNumber = "29"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
             landmarkName = "http_work_thread::run_loop()"
             landmarkType = "7">
          </BreakpointContent>
@@ -906,23 +890,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_work_thread.cpp"
-            timestampString = "574720031.243054"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "39"
-            endingLineNumber = "39"
-            landmarkName = "http_work_thread::run_loop()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "audio_tool_api/http/http_work_thread.cpp"
-            timestampString = "574720031.243129"
+            timestampString = "574775431.2511539"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "46"
@@ -937,13 +905,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "audio_tool_api/http/http_work_thread.h"
-            timestampString = "574720031.243202"
+            filePath = "audio_tool_api/http/http_work_thread.cpp"
+            timestampString = "574775431.251359"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
-            landmarkName = "~http_work_thread()"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "http_work_thread::run_loop()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -953,8 +921,24 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
+            filePath = "audio_tool_api/http/http_work_thread.h"
+            timestampString = "574775431.2515351"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "http_work_thread"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_server.cpp"
-            timestampString = "574720031.243259"
+            timestampString = "574775431.251682"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "22"
@@ -970,11 +954,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_work_thread.cpp"
-            timestampString = "574720031.2436039"
+            timestampString = "574775431.2519079"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "54"
-            endingLineNumber = "54"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
             landmarkName = "http_work_thread::run_loop()"
             landmarkType = "7">
          </BreakpointContent>
@@ -986,12 +970,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_work_thread.h"
-            timestampString = "574720031.24368"
+            timestampString = "574775431.2520829"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
-            landmarkName = "http_work_thread(http_work_thread &amp;&amp; other)"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "~http_work_thread()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1002,12 +986,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_work_thread.cpp"
-            timestampString = "574720031.243735"
+            timestampString = "574775431.252231"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "57"
-            endingLineNumber = "57"
-            landmarkName = "http_work_thread::run_loop()"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
+            landmarkName = "http_work_thread::join()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1018,11 +1002,25 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_work_thread.cpp"
-            timestampString = "574720031.243806"
+            timestampString = "574775431.2524"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "63"
-            endingLineNumber = "63"
+            startingLineNumber = "68"
+            endingLineNumber = "68">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "audio_tool_api/http/http_work_thread.cpp"
+            timestampString = "574775431.252564"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
             landmarkName = "http_work_thread::run_loop()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1034,11 +1032,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_work_thread.cpp"
-            timestampString = "574720031.243876"
+            timestampString = "574775431.252728"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "47"
-            endingLineNumber = "47"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
             landmarkName = "http_work_thread::run_loop()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1046,11 +1044,11 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_work_thread.cpp"
-            timestampString = "574720031.243946"
+            timestampString = "574775431.252885"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "42"
@@ -1062,16 +1060,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "audio_tool_api/http/http_work_thread.cpp"
-            timestampString = "574720031.244015"
+            filePath = "audio_tool_api/http/http_worker.cpp"
+            timestampString = "574775431.253032"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
-            landmarkName = "http_work_thread::run_loop()"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
+            landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1082,55 +1080,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.244082"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "51"
-            endingLineNumber = "51"
-            landmarkName = "http_worker::read_handler(boost::beast::error_code &amp; ec)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.244161"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
-            landmarkName = "http_worker::read()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.244235"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
-            landmarkName = "http_worker::read()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.244312"
+            timestampString = "574775431.253231"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "23"
@@ -1146,7 +1096,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_server.cpp"
-            timestampString = "574720031.244383"
+            timestampString = "574775431.253426"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "48"
@@ -1162,7 +1112,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_server.cpp"
-            timestampString = "574720031.244691"
+            timestampString = "574775431.253641"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "52"
@@ -1178,7 +1128,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_server.cpp"
-            timestampString = "574720031.244988"
+            timestampString = "574775431.253842"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "36"
@@ -1194,43 +1144,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.24524"
+            timestampString = "574775431.253962"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "29"
-            endingLineNumber = "29"
-            landmarkName = "http_worker::read()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.245293"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "30"
-            endingLineNumber = "30"
-            landmarkName = "http_worker::read()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.245343"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "118"
-            endingLineNumber = "118"
+            startingLineNumber = "108"
+            endingLineNumber = "108"
             landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1238,16 +1156,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "audio_tool_api/http/http_worker.cpp"
-            timestampString = "574720031.245389"
+            timestampString = "574775431.254034"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "158"
-            endingLineNumber = "158"
-            landmarkName = "http_worker::build_response(http::status status, string body)"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

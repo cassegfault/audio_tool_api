@@ -8,7 +8,7 @@
 
 #include "tpc_http_server.h"
 
-void st_http_server::start(){
+void tpc_http_server::start(){
     auto const address = boost::asio::ip::make_address(config()->server_host);
     auto const port = static_cast<unsigned short>(config()->server_port);
     acceptor.emplace(ioc, tcp::endpoint(address,port));

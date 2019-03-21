@@ -62,7 +62,7 @@ void st_http_worker::sync_read(){
     parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
     parser_->body_limit(1024 * 1024 * 1024);
     http::read(socket_, buffer_, *parser_);
-    sync_process()(parser_->get());
+    process_request(parser_->get());
 }
 
 unique_ptr<base_handler> st_http_worker::find_route(string path) {

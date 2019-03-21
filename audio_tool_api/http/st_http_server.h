@@ -48,7 +48,7 @@ private:
     
     vector<shared_ptr<tcp::socket> > connections;
     moodycamel::ConcurrentQueue<shared_ptr<tcp::socket>> q;
-    vector<http_work_thread> threads;
+    vector<thread> threads;
     bool is_running;
 };
 #endif /* st_http_server_hpp */
