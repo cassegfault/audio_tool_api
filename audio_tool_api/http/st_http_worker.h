@@ -35,18 +35,21 @@ namespace ip = boost::asio::ip;         // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio.hpp>
 namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
 
-class HTTPWorker {
+class st_http_worker {
 public:
-    HTTPWorker(HTTPWorker const&) = delete;
-    HTTPWorker& operator=(HTTPWorker const&) = delete;
+    st_http_worker(st_http_worker const&) = delete;
+    st_http_worker& operator=(st_http_worker const&) = delete;
     
-    HTTPWorker(tcp::acceptor& acceptor) : acceptor_(acceptor) { }
+    st_http_worker(tcp::acceptor& acceptor) : acceptor_(acceptor) { }
     
     void start() {
         accept();
         check_deadline();
     }
     
+    void start_sync(){
+        sync_accept();
+    }
 private:
     using alloc_t = fields_alloc<char>;
     using request_body_t = http::string_body;
@@ -77,10 +80,16 @@ private:
     boost::optional<http::response_serializer<http::string_body, http::basic_fields<alloc_t>>> string_serializer_;
     
     void accept();
+    void sync_accept();
     
     void read_request();
+    void sync_read();
     
     void process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req);
+    void sync_process(http::request<request_body_t, http::basic_fields<alloc_t>> const& req);
+    
+    void write();
+    void sync_write();
     
     void send_bad_response(http::status status, std::string const& error);
     

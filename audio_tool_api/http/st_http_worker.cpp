@@ -6,9 +6,9 @@
 //  Copyright © 2018 Chris Pauley. All rights reserved.
 //
 
-#include "old_http_worker.h"
+#include "st_http_worker.h"
 
-void HTTPWorker::accept() {
+void st_http_worker::accept() {
     // Clean up any previous connection.
     boost::beast::error_code ec;
     socket_.close(ec);
@@ -25,8 +25,17 @@ void HTTPWorker::accept() {
         }
     });
 }
+void st_http_worker::sync_accept() {
+    // Clean up any previous connection.
+    boost::beast::error_code ec;
+    socket_.close(ec);
+    buffer_.consume(buffer_.size());
+    
+    acceptor_.accept(socket_);
+    sync_read();
+}
 
-void HTTPWorker::read_request() {
+void st_http_worker::read_request() {
     // On each read the parser needs to be destroyed and
     // recreated. We store it in a boost::optional to
     // achieve that.
@@ -49,8 +58,14 @@ void HTTPWorker::read_request() {
             process_request(parser_->get());
     });
 }
+void st_http_worker::sync_read(){
+    parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    parser_->body_limit(1024 * 1024 * 1024);
+    http::read(socket_, buffer_, *parser_);
+    sync_process()(parser_->get());
+}
 
-unique_ptr<base_handler> HTTPWorker::find_route(string path) {
+unique_ptr<base_handler> st_http_worker::find_route(string path) {
     auto found_route = application_routes.find(path);
     if (found_route != application_routes.end()) {
         return unique_ptr<base_handler>(found_route->second());
@@ -58,7 +73,7 @@ unique_ptr<base_handler> HTTPWorker::find_route(string path) {
     return nullptr;
 }
 
-void HTTPWorker::process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req) {
+void st_http_worker::process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req) {
     LOG(INFO) << req.target();
     stats()->increment("requests");
     timer request_timer;
@@ -154,6 +169,10 @@ void HTTPWorker::process_request(http::request<request_body_t, http::basic_field
     string_serializer_.emplace(*string_response_);
     
     stats()->time("request_length", (int)request_timer.microseconds());
+    write();
+}
+
+void st_http_worker::write(){
     http::async_write(socket_, *string_serializer_, [this](boost::beast::error_code ec, std::size_t) {
         socket_.shutdown(tcp::socket::shutdown_send, ec);
         string_serializer_.reset();
@@ -162,7 +181,15 @@ void HTTPWorker::process_request(http::request<request_body_t, http::basic_field
     });
 }
 
-void HTTPWorker::send_bad_response(http::status status, std::string const& error) {
+void st_http_worker::sync_write(){
+    http::write(socket_, *string_serializer_);
+    socket_.shutdown(tcp::socket::shutdown_send);
+    string_serializer_.reset();
+    string_response_.reset();
+    sync_accept();
+}
+
+void st_http_worker::send_bad_response(http::status status, std::string const& error) {
     string_response_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
     
     string_response_->result(status);
@@ -184,7 +211,7 @@ void HTTPWorker::send_bad_response(http::status status, std::string const& error
     });
 }
 
-void HTTPWorker::check_deadline() {
+void st_http_worker::check_deadline() {
     // The deadline may have moved, so check it has really passed.
     if (request_deadline_.expiry() <= std::chrono::steady_clock::now()) {
         // Close socket to cancel any outstanding operation.
