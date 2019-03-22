@@ -55,7 +55,9 @@ namespace db {
         void set_param(uint32_t p);
         void set_param(int64_t p);
         void set_param(uint64_t p);
-        //void set_param(size_t p);
+        #ifdef __APPLE__
+        void set_param(size_t p);
+        #endif
         void set_param(double p);
         void set_param(bool p);
         void set_param(string p);
@@ -242,13 +244,15 @@ namespace db {
                 return query->results->getDouble(identifier);
             }
         }
-        /*operator size_t(){
+        #ifdef __APPLE__
+        operator size_t(){
             if(index > -1){
                 return query->results->getUInt64(index);
             } else {
                 return query->results->getUInt64(identifier);
             }
-        }*/
+        }
+        #endif
         operator bool(){
             if(index > -1){
                 return query->results->getBoolean(index);

@@ -106,11 +106,13 @@ namespace db{
         stmt->setUInt64(param_index, p);
         param_index++;
     }
-    /*void Query::set_param(size_t p){
+    #ifdef __APPLE__
+    void Query::set_param(size_t p){
         // @tag database abstraction
         stmt->setUInt64(param_index, p);
         param_index++;
-    }*/
+    }
+    #endif
     
     void Query::set_param(double p){
         // @tag database abstraction
