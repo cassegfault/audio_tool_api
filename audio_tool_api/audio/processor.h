@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory>
 
 extern "C" {
     #include <libavcodec/avcodec.h>

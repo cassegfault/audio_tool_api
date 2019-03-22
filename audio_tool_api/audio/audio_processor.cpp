@@ -8,6 +8,8 @@
 // Steals much from https://www.ffmpeg.org/doxygen/trunk/transcoding_8c-example.html
 
 #include "audio_processor.h"
+#undef av_err2str
+#define av_err2str(errnum) av_make_error_string((char*)__builtin_alloca(AV_ERROR_MAX_STRING_SIZE), AV_ERROR_MAX_STRING_SIZE, errnum)
 
 int AP::read_packet(void *opaque, uint8_t *buf, int buf_size){
     struct input_buffer_data *bd = (struct input_buffer_data *)opaque;
@@ -87,7 +89,9 @@ void AP::init_input() {
     
     error = (avformat_find_stream_info(in_fmt_ctx, NULL));
     if (error < 0){
-        throw string("Could not find stream info, Error: ") + av_err2str(error);
+        string err("Could not find stream info, Error: ");
+	//err += av_err2str(error);
+	throw err;
     }
     stream_ctx = (StreamContext*)av_mallocz_array(in_fmt_ctx->nb_streams, sizeof(*stream_ctx));
     

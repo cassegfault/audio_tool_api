@@ -17,8 +17,8 @@ public:
     timer() {
         start();
     }
-    high_resolution_clock::time_point start_time;
-    high_resolution_clock::time_point end_time;
+    steady_clock::time_point start_time;
+    steady_clock::time_point end_time;
     bool is_running = false;
     
     void start() {

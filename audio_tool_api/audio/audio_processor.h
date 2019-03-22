@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cinttypes>
+#include <memory>
 
 extern "C" {
 #include <libavcodec/avcodec.h>

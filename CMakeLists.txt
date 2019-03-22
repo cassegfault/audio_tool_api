@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.12)
 project (audio_tool_api)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
 
@@ -37,7 +37,7 @@ link_directories(/usr/local/lib)
 
 add_executable(audio_tool_api ${SOURCE_FILES})
 
-target_link_libraries(audio_tool_api PRIVATE pthread curl mysqlcppconn glog swscale swresample avdevice avformat avresample avfilter avcodec avutil boost_thread-mt boost_system-mt ssl crypto boost_coroutine)
+target_link_libraries(audio_tool_api PRIVATE pthread curl mysqlcppconn glog swscale swresample avdevice avformat avresample avfilter avcodec avutil boost_thread boost_system ssl crypto boost_coroutine)
 target_include_directories(audio_tool_api PRIVATE audio_tool_api /usr/local/include /usr/local/opt/openssl/include)
 
 #link_directories(./audio_tool_api)
