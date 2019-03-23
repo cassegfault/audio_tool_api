@@ -10,7 +10,7 @@
 #include <chrono>
 #include <fstream>
 void test_handler::get(http_request request_data) {
-    //std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
     /*stringstream s("str");
     ifstream urandom("/dev/urandom", ios::in|ios::binary);
     int random_value = 0, new_random = 0;
@@ -23,5 +23,7 @@ void test_handler::get(http_request request_data) {
     if(urandom){
         urandom.close();
     }*/
-    response.set_content(string("slept"));
+    nlohmann::json j;
+    j["response"] = "slept";
+    response.set_content(j);
 }

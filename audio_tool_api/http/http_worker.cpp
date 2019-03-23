@@ -77,6 +77,8 @@ void http_worker::process(http::request<body_t, fields_t> const & req){
     
     // Run the handler
     try {
+        
+        found_handler->init(work_thread_context);
         // we need to use a req_data pointer if
         found_handler->setup(&req_data);
         switch (req.method()) {

@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <unordered_map>
 #include <glog/logging.h>
+#include <boost/asio/io_context.hpp>
+#include <boost/optional/optional.hpp>
 
 #include "../http/http_request.h"
 #include "../http/http_response.h"
@@ -37,8 +39,14 @@ public:
     virtual void options(http_request request_data);
     virtual void head(http_request request_data);
     
+    // Pre and post-firing hooks
     virtual void setup(http_request *request_data) {};
     virtual void finish(http_request request_data) {};
+    
+    // initialization for all handlers
+    void init(boost::asio::io_context & _work_thread_context) {
+        work_thread_context = &_work_thread_context;
+    };
     
     HTTPResponse response;
     bool requires_authentication = true;
@@ -47,6 +55,7 @@ public:
 private:
     string not_found_response = "404 Route not found";
     int not_found_status = 404;
+    boost::asio::io_context * work_thread_context;
 };
 
 template<typename model_type>
