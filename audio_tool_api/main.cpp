@@ -42,6 +42,8 @@
 #include "http/http_connection.h"
 #include "http/http_worker.h"
 #include "http/http_server.h"
+#include "http/st_http_server.h"
+#include "http/tpc_http_server.h"
 #include "utilities/stats_client.h"
 #include "utilities/config.h"
 
@@ -64,13 +66,20 @@ int main(int argc, char* argv[]) {
     load_config("config.json");
     
     setup_stats(config()->statsd_host.c_str(), config()->statsd_port, "audio_api.");
-    
-    http_server server;
-    
-    server.start();
-    
-    while (is_running) {
-        server.poll();
+    if(strcmp(config()->server_type.c_str(), "st")==0){
+        st_http_server server;
+        server.start();
+        server.run();
+    } else if(strcmp(config()->server_type.c_str(), "tpc")==0){
+        tpc_http_server server;
+        server.start();
+        server.run();
+    } else {
+        http_server server;
+        server.start();
+        while (is_running) {
+            server.poll();
+        }
     }
     
     free_stats();

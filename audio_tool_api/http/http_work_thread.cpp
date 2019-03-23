@@ -40,7 +40,6 @@ void http_work_thread::run_loop(){
     bool did_connect = false;
     if(_q.try_dequeue(*conn)){
         did_connect = true;
-        cout << "Connection uses: " << conn->use_count() << endl;
     }
     if(_is_running && worker_it != workers.end() && did_connect){
         // we have a connection, move it into ownership of this thread
@@ -55,8 +54,6 @@ void http_work_thread::run_loop(){
         poll_timer.cancel();
         poll_timer.expires_from_now(boost::posix_time::millisec(1));
         poll_timer.async_wait(boost::bind(&http_work_thread::run_loop,this));
-    } else {
-        cout << "thread shut down" <<endl;
     }
 }
 void http_work_thread::join() {

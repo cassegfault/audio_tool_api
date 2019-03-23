@@ -49,6 +49,8 @@ config_holder::config_holder(string filename){
             google_auth_client_id = el.value();
         } else if (strcmp(key.c_str(),"google_auth_secret") == 0) {
             google_auth_secret = el.value();
+        } else if (strcmp(key.c_str(),"server_type") == 0) {
+            server_type = el.value();
         } else {
             DLOG(INFO) << "Unknown config parameter: " << key << " : ";
         }

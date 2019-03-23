@@ -13,31 +13,18 @@ void http_worker::start(shared_ptr<tcp::socket> _conn) {
     if (!_has_finished) {
         throw new runtime_error("Starting on a worker that isn't finished");
     }
-    //conn.swap(_conn);
     conn = _conn;
-    cout << "Worker connection uses: " << conn.use_count() << endl;
     _has_finished = false;
     read();
 }
 
 void http_worker::read(){
     parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    //http::request_parser<body_t, alloc_t> parser_(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
     http::async_read(*conn, buffer_, *parser_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error));
-    /*http::read(*conn, buffer_, parser_);
-    process(parser_.get());
-    /*http::async_read(*conn, buffer_, parser_, [&,this](boost::beast::error_code ec, std::size_t) {
-        if(ec){
-            cout << ec.message() << endl; 
-            _has_finished = true;
-        } else {
-            process(parser_.get());
-        }
-    });*/
 }
 void http_worker::read_handler(boost::beast::error_code & ec){
     if(ec){
-        cout << ec.message() << endl;
+        LOG(ERROR) << ec.message();
         _has_finished = true;
     } else {
         process((*parser_).get());

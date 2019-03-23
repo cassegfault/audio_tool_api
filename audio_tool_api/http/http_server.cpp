@@ -38,7 +38,7 @@ void http_server::accept(){
     
     acceptor->async_accept(*active_connection, [this](boost::beast::error_code err){
         if(err){
-            cout << "error accepting: " << err.message() <<endl;
+            LOG(ERROR) << "error accepting: " << err.message();
         } else {
             // https://stackoverflow.com/questions/43830917/boost-asio-async-reading-and-writing-to-socket-using-queue
             // create the socket inplace with the http_connection, use shared_ptr<http_connection>

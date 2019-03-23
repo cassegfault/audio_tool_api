@@ -45,7 +45,6 @@ void session::create(db::Connection * db, int _user_id) {
 void session::refresh(db::Connection * db) {
     auto query = db->query("UPDATE sessions SET expires = UNIX_TIMESTAMP() + ? WHERE token=? AND user_id=?", session_length, token, user_id);
     query.execute();
-    cout << "UPDATE " << session_length << ", " << user_id << ", " << token << endl << endl;
 }
 
 void session::lookup(db::Connection * db, string _token){

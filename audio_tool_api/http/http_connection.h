@@ -21,9 +21,6 @@ public:
     http_connection(shared_ptr<tcp::socket> _socket): socket(_socket), has_socket(true) {};
     http_connection(){ };
     ~http_connection(){
-        if(has_socket){
-            cout << "socket destructed" << endl;
-        }
         has_socket = false;
         if(socket != nullptr)
             socket->close();

@@ -18,7 +18,6 @@ void project_handler::get(http_request request_data) {
 
 void project_handler::post(http_request request_data) {
     if(request_data.json.find("guid") == request_data.json.end()) {
-        cout << request_data.json.dump() << endl;
         throw http_exception(400, "Must provide GUID of project");
     }
     if(request_data.json.find("name") == request_data.json.end()) {

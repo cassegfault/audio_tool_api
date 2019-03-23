@@ -35,6 +35,8 @@ public:
     string google_auth_secret;
     string google_auth_client_id;
     
+    string server_type;
+    
 private:
     string db_host = "";
     int db_port = 0;
