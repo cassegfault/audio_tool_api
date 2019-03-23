@@ -69,9 +69,9 @@ int main(int argc, char* argv[]) {
     
     server.start();
     
-    //while (is_running) {
-        server.run();
-    //}//*/
+    while (is_running) {
+        server.poll();
+    }
     
     free_stats();
     

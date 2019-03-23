@@ -34,7 +34,10 @@ void http_server::accept(){
     //active_connection.emplace(new shared_ptr<tcp::socket>(acceptor->get_executor().context()));
     //active_connection.swap(new tcp::socket(acceptor->get_io_context()));
     active_connection = make_shared<tcp::socket>(acceptor->get_io_context());
-    
+    if(q.size_approx() > 1000){
+        this_thread::sleep_for(chrono::milliseconds(1));
+        return accept();
+    }
     
     acceptor->async_accept(*active_connection, [this](boost::beast::error_code err){
         if(err){
