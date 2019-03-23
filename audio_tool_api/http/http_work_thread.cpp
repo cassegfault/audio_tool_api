@@ -10,6 +10,7 @@
 
 void http_work_thread::start() {
     _is_running = true;
+    num_workers = config()->num_workers;
     for(int x = 0; x < num_workers; x++){
         //workers.emplace_back(work_thread_context)
         http_worker worker(work_thread_context);

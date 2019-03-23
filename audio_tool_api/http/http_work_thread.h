@@ -20,6 +20,7 @@
 #include "external/blocking_concurrentqueue.h"
 #include "http/http_connection.h"
 #include "http/http_worker.h"
+#include "utilities/config.h"
 
 using namespace std;
 using tcp = boost::asio::ip::tcp;

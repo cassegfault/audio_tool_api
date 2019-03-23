@@ -16,7 +16,7 @@ void st_http_server::start(){
     for(int x=0; x < 1; x++){
         threads.emplace_back([this](){
             std::list<st_http_worker> workers;
-            for (int i = 0; i < 4; ++i) {
+            for (int i = 0; i < config()->num_workers; ++i) {
                 workers.emplace_back(*acceptor);
                 workers.back().start();
             }

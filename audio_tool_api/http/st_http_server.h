@@ -19,6 +19,7 @@
 #include "http/http_connection.h"
 #include "external/concurrentqueue.h"
 #include "http/st_http_worker.h"
+#include "utilities/config.h"
 
 using namespace std;
 

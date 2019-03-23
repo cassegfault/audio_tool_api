@@ -35,7 +35,9 @@ public:
     string google_auth_secret;
     string google_auth_client_id;
     
+    // For testing server setups
     string server_type;
+    int num_workers;
     
 private:
     string db_host = "";
