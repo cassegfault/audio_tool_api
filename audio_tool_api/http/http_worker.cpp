@@ -155,21 +155,11 @@ void http_worker::build_response(http::status status, string body){
 }
 
 void http_worker::write() {
-    /*http::write(*conn, *serializer);
-    conn->shutdown(tcp::socket::shutdown_send);
-    serializer.reset();
-    response.reset();
-    _has_finished = true;
-    /*http::async_write(*conn, *serializer, [this](boost::beast::error_code ec, std::size_t) {
-        conn->shutdown(tcp::socket::shutdown_send, ec);
-        serializer.reset();
-        response.reset();
-        _has_finished = true;
-    });*/
     http::async_write(*conn,*serializer,boost::bind(&http_worker::write_handler, this,boost::asio::placeholders::error));
 }
 void http_worker::write_handler(boost::beast::error_code & ec){
     conn->shutdown(tcp::socket::shutdown_send, ec);
+    conn->close();
     serializer.reset();
     response.reset();
     _has_finished = true;

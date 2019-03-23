@@ -28,12 +28,9 @@ void http_server::start(){
 }
 
 void http_server::accept(){
-    //tcp::socket sock(acceptor->get_io_context());
-    //active_connection.emplace(make_shared<tcp::socket>(acceptor->get_io_context()));
-    //active_connection.swap(new shared_ptr<tcp::socket>(acceptor->get_executor().context()));
-    //active_connection.emplace(new shared_ptr<tcp::socket>(acceptor->get_executor().context()));
-    //active_connection.swap(new tcp::socket(acceptor->get_io_context()));
+    
     active_connection = make_shared<tcp::socket>(acceptor->get_io_context());
+    // This assumes a maximum FD_SETSIZE of 1024 which is standard on most machines
     if(q.size_approx() > 1000){
         this_thread::sleep_for(chrono::milliseconds(1));
         return accept();
