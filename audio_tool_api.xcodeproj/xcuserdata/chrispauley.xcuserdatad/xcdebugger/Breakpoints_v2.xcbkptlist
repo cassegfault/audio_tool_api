@@ -591,8 +591,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "328"
             endingLineNumber = "328"
-            landmarkName = "operator == (const query_iterator&amp; other)"
-            landmarkType = "7">
+            landmarkName = "query_iterator"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -607,7 +607,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "334"
             endingLineNumber = "334"
-            landmarkName = "operator != (const query_iterator&amp; other)"
+            landmarkName = "operator == (const query_iterator&amp; other)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -623,7 +623,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "311"
             endingLineNumber = "311"
-            landmarkName = "operator++ ()"
+            landmarkName = "operator = (const query_iterator&amp; other)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1069,7 +1069,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "40"
             endingLineNumber = "40"
-            landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
+            landmarkName = "http_worker::read_handler(boost::beast::error_code &amp; ec)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1165,8 +1165,24 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "42"
             endingLineNumber = "42"
-            landmarkName = "http_worker::process(http::request&lt;body_t, fields_t&gt; const &amp; req)"
+            landmarkName = "http_worker::read_handler(boost::beast::error_code &amp; ec)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "audio_tool_api/utilities/database.h"
+            timestampString = "575034212.0761991"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
+            landmarkName = "Connection"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

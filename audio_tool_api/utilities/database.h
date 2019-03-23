@@ -113,7 +113,7 @@ namespace db {
     class Connection {
         friend class Query;
     public:
-        Connection();
+        Connection(string _connection_string, string _user, string _password, string _database);
         ~Connection();
         
         /*
@@ -153,6 +153,8 @@ namespace db {
         }*/
         template<typename ...P>
         db::Query query(string query_string, const P & ...parameters){
+            if(!_is_open)
+                open();
             Query q(this, query_string.c_str());
             q.set_params(std::cref(parameters)...);
             return q;
@@ -163,11 +165,15 @@ namespace db {
             return _is_open;
         };
         
-        void open(string connection_string, string user, string password, string database);
+        void open();
         void close();
         
     private:
         bool _is_open = false;
+        string connection_string;
+        string user;
+        string password;
+        string database;
         
         // @tag database abstraction
         sql::Connection * sql;

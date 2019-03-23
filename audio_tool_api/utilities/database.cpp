@@ -9,10 +9,10 @@
 #include "database.h"
 namespace db{
     mutex m;
-    Connection::Connection(): _is_open(false), sql(nullptr) {
+    Connection::Connection(string _connection_string, string _user, string _password, string _database): _is_open(false), sql(nullptr), connection_string(_connection_string), user(_user), password(_password), database(_database) {
     }
     
-    void Connection::open(string connection_string, string user, string password, string database){
+    void Connection::open(){
         // @tag database abstraction
         m.lock();
             sql::Driver *driver;
@@ -32,6 +32,8 @@ namespace db{
     }
     
     Query Connection::raw_query(const char * query_string) {
+        if(!_is_open)
+            open();
         Query q(this, query_string);
         return q;
     }
