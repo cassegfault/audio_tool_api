@@ -54,8 +54,10 @@ void st_http_worker::read_request() {
         if (ec){
             accept();
         }
-        else
+        else{
             process_request(parser_->get());
+            write();
+        }
     });
 }
 void st_http_worker::sync_read(){
@@ -63,6 +65,7 @@ void st_http_worker::sync_read(){
     parser_->body_limit(1024 * 1024 * 1024);
     http::read(socket_, buffer_, *parser_);
     process_request(parser_->get());
+    sync_write();
 }
 
 unique_ptr<base_handler> st_http_worker::find_route(string path) {
@@ -169,7 +172,6 @@ void st_http_worker::process_request(http::request<request_body_t, http::basic_f
     string_serializer_.emplace(*string_response_);
     
     stats()->time("request_length", (int)request_timer.microseconds());
-    write();
 }
 
 void st_http_worker::write(){

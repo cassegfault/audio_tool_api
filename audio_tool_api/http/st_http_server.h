@@ -44,7 +44,7 @@ public:
 private:
     boost::optional<tcp::acceptor> acceptor;
     shared_ptr<tcp::socket> active_connection;
-    boost::asio::io_context ioc;
+    boost::asio::io_context ioc{1};
     
     vector<shared_ptr<tcp::socket> > connections;
     moodycamel::ConcurrentQueue<shared_ptr<tcp::socket>> q;
