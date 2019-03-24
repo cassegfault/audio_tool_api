@@ -53,21 +53,16 @@ void user_model::fill_by_token(db::Connection *db, string token) {
 }
 
 bool user_model::authenticate(db::Connection * db, string email, string pass){
-    
     auto query = db->query("SELECT id, email, hash, nacl FROM users WHERE email=?", email);
-    LOG(INFO) << "Rows found:" << query.row_count();
     auto results = query.row();
     
-    LOG(INFO) << "Building Hash";
     int user_id = int(results["id"]);
     istream * hash_stream = results["hash"];
     unsigned char hash[128];
     hash_stream->read( (char *)&hash[0], 128);
-    LOG(INFO) << "Building Salt";
     istream * salt_stream = results["nacl"];
     unsigned char salt[128];
     salt_stream->read( (char *)&salt[0], 128);
-    LOG(INFO) << "Building Hash";
     unsigned char * test_hash = (unsigned char *) malloc(sizeof(unsigned char) * 128);
     int success = PKCS5_PBKDF2_HMAC_SHA1(pass.c_str(), pass.length(), salt, 128, 1000, 128, test_hash);
     
@@ -76,9 +71,7 @@ bool user_model::authenticate(db::Connection * db, string email, string pass){
         throw std::runtime_error("Could not generate hash on authentication");
         return false;
     }
-    LOG(INFO) << "Checking Hash";
     if(strcmp((const char *)&hash[0], (const char *)test_hash) == 0){
-        LOG(INFO) << "Successfully Authenticated";
         fill_by_id(db, user_id);
         create_session(db);
         return true;

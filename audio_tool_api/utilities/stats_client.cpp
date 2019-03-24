@@ -31,7 +31,7 @@ stats_client::stats_client(const char * host, int port, const char * _stat_names
         LOG(ERROR) << "Could not create socket connection to stats host";
         return;
     }
-    LOG(INFO) << "Connecting to statsd";
+    DLOG(INFO) << "Connecting to statsd";
     connect(fd, res->ai_addr, res->ai_addrlen);
     
     message = new char[4096];

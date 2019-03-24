@@ -151,16 +151,13 @@ void auth_handler::post(http_request request_data) {
     nlohmann::json j = request_data.parse_json();
     string email = j["email"];
     string pass = j["password"];
-    LOG(INFO) << "Received " << email << " : " << pass;
     bool did_authenticate = user.authenticate(db,email,pass);
     if(did_authenticate) {
-        LOG(INFO) << "Successfully authenticated";
         user.create_session(db);
         response.headers.emplace("session-token", user.current_session.token);
         nlohmann::json user_data = user;
         response.set_content(user_data);
     } else {
-        LOG(INFO) << "Did not authenticate";
         throw http_exception(403, "Authentication Failed");
     }
 }
@@ -169,9 +166,7 @@ void auth_handler::put(http_request request_data) {
     nlohmann::json j = request_data.parse_json();
     string email = j["email"];
     string pass = j["password"];
-    LOG(INFO) << "Received " << email << " : " << pass;
     user.create(db,email,pass);
-    LOG(INFO) << "Successfully authenticated";
     user.create_session(db);
     response.headers.emplace("session-token", user.current_session.token);
     nlohmann::json user_data = user;

@@ -10,10 +10,8 @@
 
 string HTTPResponse::get_content(){
     if(use_json_body) {
-        LOG(INFO) << "using JSON body";
         return json_content.dump();
     } else {
-        LOG(INFO) << "using String body";
         return body_content;
     }
 }

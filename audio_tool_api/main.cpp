@@ -5,7 +5,7 @@
 //  Created by Chris Pauley on 12/1/18.
 //  Copyright © 2018 Chris Pauley. All rights reserved.
 //
-
+#define NDEBUG
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
