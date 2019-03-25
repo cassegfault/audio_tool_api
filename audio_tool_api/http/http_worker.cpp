@@ -9,7 +9,7 @@
 #include "http_worker.h"
 
 
-void http_worker::start(shared_ptr<tcp::socket> _conn) {
+void http_worker::start(shared_ptr<http_connection> _conn) {
     if (!_has_finished) {
         throw new runtime_error("Starting on a worker that isn't finished");
     }
@@ -20,12 +20,12 @@ void http_worker::start(shared_ptr<tcp::socket> _conn) {
 
 void http_worker::read(){
     parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    http::async_read(*conn, buffer_, *parser_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error));
+    http::async_read(conn->socket, buffer_, *parser_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error));
 }
 void http_worker::read_handler(boost::beast::error_code & ec){
     if(ec){
         LOG(ERROR) << ec.message();
-        _has_finished = true;
+        close_socket(ec);
     } else {
         process((*parser_).get());
     }
@@ -145,18 +145,20 @@ void http_worker::build_response(http::status status, string body){
 }
 
 void http_worker::write() {
-    http::async_write(*conn,*serializer,boost::bind(&http_worker::write_handler, this,boost::asio::placeholders::error));
+    http::async_write(conn->socket,*serializer,boost::bind(&http_worker::write_handler, this,boost::asio::placeholders::error));
 }
 void http_worker::write_handler(boost::beast::error_code & ec){
-	if(ec){
-		LOG(ERROR) << ec.message();
-	}
-    conn->shutdown(tcp::socket::shutdown_both, ec);
-    boost::system::error_code close_err; 
-    conn->close(close_err);
-    if(close_err) {
-	    LOG(ERROR) << close_err.message();
+    if(ec){
+        LOG(ERROR) << ec.message();
     }
+    
+    close_socket(ec);
+}
+
+void http_worker::close_socket(boost::beast::error_code & ec){
+    conn->close(work_thread_context, ec);
+    auto diff = chrono::steady_clock::now() - conn->accepted_time;
+    stats()->time("request_length", (int)chrono::duration_cast<chrono::microseconds>(diff).count());
     serializer.reset();
     response.reset();
     _has_finished = true;

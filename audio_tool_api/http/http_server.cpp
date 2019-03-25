@@ -30,6 +30,7 @@ void http_server::start(){
 void http_server::accept(){
     
     active_connection = make_shared<tcp::socket>(acceptor->get_io_context());
+    conn = make_shared<http_connection>(acceptor->get_io_context());
     // This assumes a maximum FD_SETSIZE of 1024 which is standard on most machines
     auto num = q.size_approx();
     DLOG_IF(INFO, num > 5) << "Approx Connections: " << q.size_approx();
@@ -39,9 +40,12 @@ void http_server::accept(){
         return accept();
     }
     
-    acceptor->async_accept(*active_connection, [this](boost::beast::error_code err){
+    //acceptor->async_accept(*active_connection, [this](boost::beast::error_code err){
+    acceptor->async_accept(conn->socket, [this](boost::beast::error_code err){
         if(err){
             LOG(ERROR) << "error accepting: " << err.message();
+            conn->socket.shutdown(tcp::socket::shutdown_both,err);
+            conn->socket.close();
         } else {
             // https://stackoverflow.com/questions/43830917/boost-asio-async-reading-and-writing-to-socket-using-queue
             // create the socket inplace with the http_connection, use shared_ptr<http_connection>
@@ -50,7 +54,8 @@ void http_server::accept(){
             
             //connections.push_back(active_connection);
             // active connection is getting changed before we're able to handle a response from it
-            shared_ptr<tcp::socket> new_shared(active_connection);
+            shared_ptr<http_connection> new_shared(conn);
+            conn->accepted_time = chrono::steady_clock::now();
             connections.emplace_back(new_shared);
             q.enqueue(connections.back());
         }

@@ -26,7 +26,7 @@ using namespace std;
 using tcp = boost::asio::ip::tcp;
 
 class http_work_thread {
-    using q_type =moodycamel::ConcurrentQueue<shared_ptr<tcp::socket>>;
+    using q_type =moodycamel::ConcurrentQueue<shared_ptr<http_connection>>;
 public:
     http_work_thread(q_type & q) : _is_running(false), _thread(), _q(q), poll_timer(work_thread_context) {};
     http_work_thread(http_work_thread && other): _is_running(bool(other._is_running)), _thread(std::move(other._thread)), _q(other._q), poll_timer(work_thread_context) {}

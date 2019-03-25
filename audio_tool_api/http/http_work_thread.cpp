@@ -25,7 +25,7 @@ void http_work_thread::thread_runner(){
 }
 
 void http_work_thread::run_loop(){
-    shared_ptr<tcp::socket> * conn = new shared_ptr<tcp::socket>();
+    shared_ptr<http_connection> * conn = new shared_ptr<http_connection>();
     
     vector<http_worker>::iterator worker_it;
     
@@ -53,7 +53,7 @@ void http_work_thread::run_loop(){
     if(_is_running){
         // Allow other asynchronous work to run
         poll_timer.cancel();
-        poll_timer.expires_from_now(boost::posix_time::millisec(1));
+        poll_timer.expires_from_now(boost::posix_time::millisec(2));
         poll_timer.async_wait(boost::bind(&http_work_thread::run_loop,this));
     }
 }

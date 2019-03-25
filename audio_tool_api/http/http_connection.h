@@ -12,23 +12,46 @@
 #include <stdio.h>
 #include <iostream>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/beast/http/error.hpp>
+#include <boost/asio/strand.hpp>
+#include <glog/logging.h>
+#include <chrono>
 
 using namespace std;
 using tcp = boost::asio::ip::tcp;
 
 class http_connection : public std::enable_shared_from_this<http_connection> {
 public:
-    http_connection(shared_ptr<tcp::socket> _socket): socket(_socket), has_socket(true) {};
-    http_connection(){ };
+    http_connection(boost::asio::io_context & context): socket(context), has_socket(true), created_time(chrono::steady_clock::now()) {};
     ~http_connection(){
         has_socket = false;
-        if(socket != nullptr)
-            socket->close();
+        if(socket.is_open()){
+            socket.shutdown(tcp::socket::shutdown_both);
+            socket.close();
+        }
     }
-    shared_ptr<tcp::socket> socket;
+    tcp::socket socket;
     shared_ptr<http_connection> get_ptr() { return shared_from_this(); }
+    
+    void close(boost::asio::io_context & work_thread_context, boost::beast::error_code & ec){
+        socket.shutdown(tcp::socket::shutdown_both, ec);
+        boost::asio::io_context::strand s(work_thread_context);
+        s.wrap([this](){
+            boost::system::error_code close_err;
+            socket.close(close_err);
+            if(close_err) {
+                LOG(ERROR) << close_err.message();
+            }
+        });
+        closed_time = chrono::steady_clock::now();
+    }
+    chrono::steady_clock::time_point created_time;
+    chrono::steady_clock::time_point accepted_time;
+    chrono::steady_clock::time_point closed_time;
 private:
     bool has_socket = false;
+    
 };
 
 #endif /* http_connection_hpp */

@@ -15,6 +15,7 @@
 #include <boost/asio/placeholders.hpp>
 #include <boost/optional/optional.hpp>
 #include <boost/bind.hpp>
+#include <boost/asio/strand.hpp>
 
 #include <boost/beast/http.hpp>
 
@@ -36,10 +37,10 @@ public:
     http_worker(const http_worker& other): work_thread_context(other.work_thread_context), parser_(boost::none) {}
     ~http_worker(){};
     
-    void start(shared_ptr<tcp::socket> _conn);
+    void start(shared_ptr<http_connection> _conn);
     bool has_finished() { return _has_finished; }
 private:
-    shared_ptr<tcp::socket> conn;
+    shared_ptr<http_connection> conn;
     boost::asio::io_context & work_thread_context;
     bool _has_finished = true;
     
@@ -65,6 +66,7 @@ private:
     void build_response(HTTPResponse & handler_result);
     void build_response(http::status error_code, string body);
     void write();
+    void close_socket(boost::beast::error_code & ec);
 };
 
 #endif /* http_worker_hpp */
