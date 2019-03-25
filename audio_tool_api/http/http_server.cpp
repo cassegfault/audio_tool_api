@@ -44,8 +44,12 @@ void http_server::accept(){
     acceptor->async_accept(conn->socket, [this](boost::beast::error_code err){
         if(err){
             LOG(ERROR) << "error accepting: " << err.message();
+            stats()->increment("accept_errors");
+            boost::asio::io_context::strand s(ioc);
             conn->socket.shutdown(tcp::socket::shutdown_both,err);
-            conn->socket.close();
+            s.wrap([this](){
+                conn->socket.close();
+            });
         } else {
             // https://stackoverflow.com/questions/43830917/boost-asio-async-reading-and-writing-to-socket-using-queue
             // create the socket inplace with the http_connection, use shared_ptr<http_connection>

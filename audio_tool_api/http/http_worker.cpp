@@ -25,6 +25,7 @@ void http_worker::read(){
 void http_worker::read_handler(boost::beast::error_code & ec){
     if(ec){
         LOG(ERROR) << ec.message();
+        stats()->increment("read_errors");
         close_socket(ec);
     } else {
         process((*parser_).get());
@@ -150,6 +151,7 @@ void http_worker::write() {
 void http_worker::write_handler(boost::beast::error_code & ec){
     if(ec){
         LOG(ERROR) << ec.message();
+        stats()->increment("write_errors");
     }
     
     close_socket(ec);
