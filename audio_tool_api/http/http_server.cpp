@@ -31,7 +31,8 @@ void http_server::accept(){
     
     active_connection = make_shared<tcp::socket>(acceptor->get_io_context());
     // This assumes a maximum FD_SETSIZE of 1024 which is standard on most machines
-    DLOG_EVERY_N(INFO, 50) << "Approx Connections: " << q.size_approx();
+    auto num = q.size_approx();
+    DLOG_IF(INFO, num > 5) << "Approx Connections: " << q.size_approx();
     if(q.size_approx() > 1000){
         //this_thread::sleep_for(chrono::milliseconds(1));
         DLOG(INFO) << "Too Many connections in queue";

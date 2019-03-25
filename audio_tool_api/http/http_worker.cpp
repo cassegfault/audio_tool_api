@@ -31,7 +31,7 @@ void http_worker::read_handler(boost::beast::error_code & ec){
     }
 }
 void http_worker::process(http::request<body_t, fields_t> const & req){
-    LOG(INFO) << req.target();
+    //LOG(INFO) << req.target();
     stats()->increment("requests");
     timer request_timer;
     request_timer.start();
@@ -113,6 +113,7 @@ void http_worker::build_response(HTTPResponse & handler_result){
     
     response->set(http::field::server, "Audio Tool API");
     response->set(http::field::content_type, handler_result.content_type);
+    response->keep_alive(false);
     
     // Set any headers
     for(auto header : handler_result.headers){
@@ -147,8 +148,15 @@ void http_worker::write() {
     http::async_write(*conn,*serializer,boost::bind(&http_worker::write_handler, this,boost::asio::placeholders::error));
 }
 void http_worker::write_handler(boost::beast::error_code & ec){
-    conn->shutdown(tcp::socket::shutdown_send, ec);
-    conn->close();
+	if(ec){
+		LOG(ERROR) << ec.message();
+	}
+    conn->shutdown(tcp::socket::shutdown_both, ec);
+    boost::system::error_code close_err; 
+    conn->close(close_err);
+    if(close_err) {
+	    LOG(ERROR) << close_err.message();
+    }
     serializer.reset();
     response.reset();
     _has_finished = true;

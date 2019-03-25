@@ -92,10 +92,7 @@ http_request::http_request(http::request<request_body_t, http::basic_fields<allo
         multipart_parser_set_data(m_parser, this);
         multipart_parser_execute(m_parser, req.body().c_str(), req.body().length());
     
-    } else {
-        LOG(WARNING) << "Did not find multipart boundary";
-    }
-    
+    }     
 }
 
 http_request::~http_request(){
