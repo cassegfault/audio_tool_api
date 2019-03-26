@@ -13,6 +13,7 @@ void http_worker::start(shared_ptr<http_connection> _conn) {
     if (!_has_finished) {
         throw new runtime_error("Starting on a worker that isn't finished");
     }
+    //conn.reset(_conn.get());
     conn = _conn;
     _has_finished = false;
     _has_started = true;
@@ -167,6 +168,7 @@ void http_worker::close_socket(boost::beast::error_code & ec){
     serializer.reset();
     response.reset();
     _has_finished = true;
+    conn.reset();
 }
 
 unique_ptr<base_handler> http_worker::find_route(string path) {
