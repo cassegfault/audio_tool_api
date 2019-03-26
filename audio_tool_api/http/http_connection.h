@@ -29,6 +29,15 @@ public:
     shared_ptr<http_connection> get_ptr() { return shared_from_this(); }
     
     void close(boost::asio::io_context & work_thread_context, boost::beast::error_code & ec){
+        socket.shutdown(tcp::socket::shutdown_both, ec);
+        boost::asio::io_context::strand s(work_thread_context);
+        s.wrap([this](){
+            boost::system::error_code close_err;
+            socket.close(close_err);
+            if(close_err) {
+                LOG(ERROR) << close_err.message();
+            }
+        });
         closed_time = chrono::steady_clock::now();
     }
     chrono::steady_clock::time_point created_time;
