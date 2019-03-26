@@ -29,6 +29,7 @@ public:
         if(socket.is_open()){
             socket.shutdown(tcp::socket::shutdown_both);
             socket.close();
+            DLOG(ERROR) << "Socket closed improperly";
         }
     }
     tcp::socket socket;

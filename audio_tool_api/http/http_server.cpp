@@ -58,10 +58,10 @@ void http_server::accept(){
             
             //connections.push_back(active_connection);
             // active connection is getting changed before we're able to handle a response from it
-            shared_ptr<http_connection> new_shared(conn);
+            //shared_ptr<http_connection> new_shared(conn);
             conn->accepted_time = chrono::steady_clock::now();
-            connections.emplace_back(new_shared);
-            q.enqueue(connections.back());
+            //connections.emplace_back(new_shared);
+            q.enqueue(conn);
         }
         accept();
     });

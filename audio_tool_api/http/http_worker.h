@@ -35,7 +35,11 @@ class http_worker {
 public:
     http_worker(boost::asio::io_context & _work_thread_context): work_thread_context(_work_thread_context), parser_(boost::none) {};
     http_worker(const http_worker& other): work_thread_context(other.work_thread_context), parser_(boost::none) {}
-    ~http_worker(){};
+    ~http_worker(){
+        auto err = boost::system::errc::make_error_code(boost::system::errc::success);
+        close_socket(err);
+        conn->~http_connection();
+    };
     
     void start(shared_ptr<http_connection> _conn);
     bool has_finished() { return _has_finished; }
