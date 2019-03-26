@@ -38,6 +38,7 @@ public:
     // For testing server setups
     string server_type;
     int num_workers;
+    int num_threads;
     
 private:
     string db_host = "";

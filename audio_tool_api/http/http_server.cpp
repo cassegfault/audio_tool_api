@@ -14,8 +14,7 @@ void http_server::start(){
     tcp::endpoint endpoint(address,port);
     acceptor.emplace(ioc, endpoint);
     
-    int num_threads = std::thread::hardware_concurrency();
-    for (int x = 0; x < num_threads; x++) {
+    for (int x = 0; x < config()->num_threads; x++) {
         threads.emplace_back(q);
     }
     
