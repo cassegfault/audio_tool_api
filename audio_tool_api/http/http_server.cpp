@@ -61,7 +61,7 @@ void http_server::accept(){
             //shared_ptr<http_connection> new_shared(conn);
             conn->accepted_time = chrono::steady_clock::now();
             //connections.emplace_back(new_shared);
-            q.enqueue(conn);
+            q.enqueue(std::move(conn));
         }
         accept();
     });

@@ -23,7 +23,6 @@ void http_work_thread::thread_runner(){
 }
 
 void http_work_thread::run_loop(){
-    shared_ptr<http_connection> * conn = new shared_ptr<http_connection>();
     
     vector<http_worker>::iterator worker_it;
     

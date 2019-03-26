@@ -38,6 +38,7 @@ public:
     void join();
     bool is_running() { return _is_running; }
     int num_workers = 4;
+    shared_ptr<http_connection> * conn = new shared_ptr<http_connection>();
 private:
     vector<http_worker> workers;
     void run_loop();
