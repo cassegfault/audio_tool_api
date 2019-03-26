@@ -37,16 +37,13 @@ void http_work_thread::run_loop(){
             break;
         }
     }
+    
     // should we try and dequeue here? What if we're hoarding connections? possibly
-    bool did_connect = false;
-    if(_q.try_dequeue(*conn)){
-        did_connect = true;
-    }
-    if(_is_running && worker_it != workers.end() && did_connect){
-        // we have a connection, move it into ownership of this thread
-        //connections.emplace_back(conn->get_ptr());
-        //worker_it->start(connections.back());
-        worker_it->start(*conn);
+    if(_is_running && worker_it != workers.end()){
+        // we have a worker, check if there is anything to dequeue
+        if(_q.try_dequeue(*conn)){
+            worker_it->start(*conn);
+        }
     }
     
     // Continuously feed our timer unless the thread has been shut down. This keeps the io_context (and the thread) open
