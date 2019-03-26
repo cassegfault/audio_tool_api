@@ -36,9 +36,10 @@ public:
     http_worker(boost::asio::io_context & _work_thread_context): work_thread_context(_work_thread_context), parser_(boost::none) {};
     http_worker(const http_worker& other): work_thread_context(other.work_thread_context), parser_(boost::none) {}
     ~http_worker(){
-        auto err = boost::system::errc::make_error_code(boost::system::errc::success);
-        close_socket(err);
-        conn->~http_connection();
+        if(_has_started){
+            auto err = boost::system::errc::make_error_code(boost::system::errc::success);
+            close_socket(err);
+        }
     };
     
     void start(shared_ptr<http_connection> _conn);
@@ -47,6 +48,7 @@ private:
     shared_ptr<http_connection> conn;
     boost::asio::io_context & work_thread_context;
     bool _has_finished = true;
+    bool _has_started = false;
     
     // I would like to replace the http stuff with either a smaller http parser or my own
         using alloc_t = fields_alloc<char>;

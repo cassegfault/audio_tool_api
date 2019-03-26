@@ -15,6 +15,7 @@ void http_worker::start(shared_ptr<http_connection> _conn) {
     }
     conn = _conn;
     _has_finished = false;
+    _has_started = true;
     read();
 }
 

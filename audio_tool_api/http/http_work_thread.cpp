@@ -12,9 +12,7 @@ void http_work_thread::start() {
     _is_running = true;
     num_workers = config()->num_workers;
     for(int x = 0; x < num_workers; x++){
-        //workers.emplace_back(work_thread_context)
-        http_worker worker(work_thread_context);
-        workers.push_back(worker);
+        workers.emplace_back(work_thread_context);
     }
     _thread = thread(&http_work_thread::thread_runner, this);
 }
@@ -42,7 +40,7 @@ void http_work_thread::run_loop(){
     if(_is_running && worker_it != workers.end()){
         // we have a worker, check if there is anything to dequeue
         if(_q.try_dequeue(*conn)){
-            worker_it->start(*conn);
+            worker_it->start(std::move(*conn));
         }
     }
     

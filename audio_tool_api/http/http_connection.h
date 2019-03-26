@@ -25,7 +25,6 @@ class http_connection : public std::enable_shared_from_this<http_connection> {
 public:
     http_connection(boost::asio::io_context & context): socket(context), has_socket(true), created_time(chrono::steady_clock::now()) {};
     ~http_connection(){
-        has_socket = false;
         if(socket.is_open()){
             socket.shutdown(tcp::socket::shutdown_both);
             socket.close();
