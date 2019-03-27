@@ -35,17 +35,15 @@ void http_server::accept(){
         LOG(WARNING) << "Too Many connections in queue";
         return accept();
     }
-    
-    acceptor->async_accept(conn->socket, [this](boost::beast::error_code err){
+    boost::beast::error_code err;
+    acceptor->accept(conn->socket, err);
+
+    //acceptor->async_accept(conn->socket, [this](boost::beast::error_code err){
         accepted_connections++;
         if(err){
             LOG(ERROR) << "error accepting: " << err.message();
             stats()->increment("accept_errors");
-            boost::asio::io_context::strand s(ioc);
-            conn->socket.shutdown(tcp::socket::shutdown_both,err);
-            s.wrap([this](){
-                conn->socket.close();
-            });
+            conn->close(ioc,err);
         } else {
             conn->accepted_time = chrono::steady_clock::now();
             auto diff = conn->accepted_time - conn->created_time;
@@ -58,7 +56,7 @@ void http_server::accept(){
         DLOG_IF(WARNING, (int)chrono::duration_cast<chrono::milliseconds>(now - last_accept_time).count() > 10 * 1000) << "More than 10s between accepts";
         last_accept_time = now;
         accept();
-    });
+    //});
 }
 
 void http_server::poll(){
