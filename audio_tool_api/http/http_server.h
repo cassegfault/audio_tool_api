@@ -34,10 +34,12 @@ public:
     void run();
     void stop() {
         ioc.stop();
+        is_running=false;
         LOG(INFO) << "Accepted Connections: " << accepted_connections;
     };
     
 private:
+    bool is_running=false;
     int accepted_connections=0;
     void accept();
     boost::optional<tcp::acceptor> acceptor;

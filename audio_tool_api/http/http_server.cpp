@@ -13,16 +13,20 @@ void http_server::start(){
     unsigned short const port = static_cast<unsigned short>(config()->server_port);
     tcp::endpoint endpoint(address,port);
     acceptor.emplace(ioc, endpoint);
+    is_running = true;
     
     for (int x = 0; x < config()->num_threads; x++) {
         threads.emplace_back(q);
     }
     
     LOG(INFO) << "Listening on " << config()->server_host << ':' << config()->server_port;
-    accept();
     
     for(auto & t : threads) {
         t.start();
+    }
+    
+    while(is_running){
+        accept();
     }
 }
 
@@ -33,7 +37,7 @@ void http_server::accept(){
     DLOG_IF(INFO, num > 5) << "Approx Connections: " << q.size_approx();
     if(q.size_approx() > 1000){
         LOG(WARNING) << "Too Many connections in queue";
-        return accept();
+        return ;//accept();
     }
     boost::beast::error_code err;
     acceptor->accept(conn->socket, err);
@@ -55,7 +59,7 @@ void http_server::accept(){
         auto now = chrono::steady_clock::now();
         DLOG_IF(WARNING, (int)chrono::duration_cast<chrono::milliseconds>(now - last_accept_time).count() > 10 * 1000) << "More than 10s between accepts";
         last_accept_time = now;
-        accept();
+        //accept();
     //});
 }
 
