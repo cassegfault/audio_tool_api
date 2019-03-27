@@ -37,6 +37,7 @@ void http_server::accept(){
     }
     
     acceptor->async_accept(conn->socket, [this](boost::beast::error_code err){
+        accepted_connections++;
         if(err){
             LOG(ERROR) << "error accepting: " << err.message();
             stats()->increment("accept_errors");
