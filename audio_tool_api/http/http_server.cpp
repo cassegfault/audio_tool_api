@@ -55,6 +55,8 @@ void http_server::accept(){
             q.enqueue(std::move(conn));
             if(chrono::duration_cast<chrono::milliseconds>(diff).count() > 10000){
                 LOG(ERROR) << "Connect Timeout";
+            } else {
+                LOG(INFO) << "Duration: " << chrono::duration_cast<chrono::milliseconds>(diff).count();
             }
         }
         accept();

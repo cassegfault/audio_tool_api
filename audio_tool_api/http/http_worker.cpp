@@ -162,10 +162,11 @@ void http_worker::write_handler(boost::beast::error_code & ec){
 
 void http_worker::close_socket(boost::beast::error_code & ec){
     conn->close(work_thread_context, ec);
-    auto diff = conn->closed_time - conn->accepted_time;
-    auto total_diff = conn->closed_time - conn->created_time;
-    stats()->time("request_length", (int)chrono::duration_cast<chrono::microseconds>(diff).count());
-    stats()->time("long_request_length", (int)chrono::duration_cast<chrono::microseconds>(total_diff).count());
+    int diff = (int)chrono::duration_cast<chrono::microseconds>(conn->closed_time - conn->accepted_time).count();
+    int total_diff = (int)chrono::duration_cast<chrono::microseconds>(conn->closed_time - conn->created_time).count();
+    LOG_IF(ERROR, total_diff > 30000) << "Connection lasted longer than 30s";
+    stats()->time("request_length", diff);
+    stats()->time("long_request_length", total_diff);
     serializer.reset();
     response.reset();
     _has_finished = true;
