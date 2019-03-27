@@ -40,6 +40,10 @@ public:
             t.join();
         }
     }
+    void stop(){
+        is_running = false;
+        ioc.stop();
+    }
     
 private:
     boost::optional<tcp::acceptor> acceptor;

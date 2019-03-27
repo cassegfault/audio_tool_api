@@ -27,19 +27,15 @@ void http_server::start(){
 }
 
 void http_server::accept(){
-    
-    active_connection = make_shared<tcp::socket>(acceptor->get_io_context());
     conn = make_shared<http_connection>(acceptor->get_io_context());
     // This assumes a maximum FD_SETSIZE of 1024 which is standard on most machines
     auto num = q.size_approx();
     DLOG_IF(INFO, num > 5) << "Approx Connections: " << q.size_approx();
     if(q.size_approx() > 1000){
-        //this_thread::sleep_for(chrono::milliseconds(1));
         LOG(WARNING) << "Too Many connections in queue";
         return accept();
     }
     
-    //acceptor->async_accept(*active_connection, [this](boost::beast::error_code err){
     acceptor->async_accept(conn->socket, [this](boost::beast::error_code err){
         if(err){
             LOG(ERROR) << "error accepting: " << err.message();
@@ -55,10 +51,11 @@ void http_server::accept(){
             q.enqueue(std::move(conn));
             if(chrono::duration_cast<chrono::milliseconds>(diff).count() > 10000){
                 LOG(ERROR) << "Connect Timeout";
-            } else {
-                LOG(INFO) << "Duration: " << chrono::duration_cast<chrono::milliseconds>(diff).count();
             }
         }
+        auto now = chrono::steady_clock::now();
+        DLOG_IF(WARNING, (int)chrono::duration_cast<chrono::milliseconds>(now - last_accept_time).count() > 10 * 1000) << "More than 10s between accepts";
+        last_accept_time = now;
         accept();
     });
 }

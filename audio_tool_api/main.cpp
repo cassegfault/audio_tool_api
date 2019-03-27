@@ -51,8 +51,10 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
 namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
 bool is_running = false;
+std::function<void()> stop_running;
 void sighandler(int sig) {
     is_running = false;
+    stop_running();
 }
 
 int main(int argc, char* argv[]) {
@@ -68,18 +70,19 @@ int main(int argc, char* argv[]) {
     setup_stats(config()->statsd_host.c_str(), config()->statsd_port, "audio_api.");
     if(strcmp(config()->server_type.c_str(), "st")==0){
         st_http_server server;
+        stop_running = [&server](){ server.stop(); };
         server.start();
         server.run();
     } else if(strcmp(config()->server_type.c_str(), "tpc")==0){
         tpc_http_server server;
+        stop_running = [&server](){ server.stop(); };
         server.start();
         server.run();
     } else {
         http_server server;
+        stop_running = [&server](){ server.stop(); };
         server.start();
-        while (is_running) {
-            server.poll();
-        }
+        server.run();
     }
     
     free_stats();

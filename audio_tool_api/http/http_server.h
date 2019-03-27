@@ -10,6 +10,7 @@
 #define http_server_hpp
 
 #include <stdio.h>
+#include <chrono>
 
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/optional/optional.hpp>
@@ -31,8 +32,12 @@ public:
     void start();
     void poll();
     void run();
+    void stop() {
+        ioc.stop();
+    };
     
 private:
+    
     void accept();
     boost::optional<tcp::acceptor> acceptor;
     shared_ptr<tcp::socket> active_connection;
@@ -42,6 +47,8 @@ private:
     vector<shared_ptr<http_connection> > connections;
     moodycamel::ConcurrentQueue<shared_ptr<http_connection>> q;
     vector<http_work_thread> threads;
+    
+    chrono::steady_clock::time_point last_accept_time = chrono::steady_clock::now();
 };
 
 #endif /* http_server_hpp */
