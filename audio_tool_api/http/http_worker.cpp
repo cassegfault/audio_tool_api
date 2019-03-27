@@ -14,7 +14,8 @@ void http_worker::start(shared_ptr<http_connection> _conn) {
         throw new runtime_error("Starting on a worker that isn't finished");
     }
     //conn.reset(_conn.get());
-    conn = _conn;
+    //conn = std::move(_conn);
+    conn.swap(_conn);
     _has_finished = false;
     _has_started = true;
     read();

@@ -35,7 +35,7 @@ void http_server::accept(){
     DLOG_IF(INFO, num > 5) << "Approx Connections: " << q.size_approx();
     if(q.size_approx() > 1000){
         //this_thread::sleep_for(chrono::milliseconds(1));
-        DLOG(INFO) << "Too Many connections in queue";
+        LOG(WARNING) << "Too Many connections in queue";
         return accept();
     }
     
@@ -50,17 +50,12 @@ void http_server::accept(){
                 conn->socket.close();
             });
         } else {
-            // https://stackoverflow.com/questions/43830917/boost-asio-async-reading-and-writing-to-socket-using-queue
-            // create the socket inplace with the http_connection, use shared_ptr<http_connection>
-            // list to queue connections,
-            //shared_ptr<tcp::socket> socket_ptr(std::make_shared<tcp::socket>(*active_connection));
-            
-            //connections.push_back(active_connection);
-            // active connection is getting changed before we're able to handle a response from it
-            //shared_ptr<http_connection> new_shared(conn);
             conn->accepted_time = chrono::steady_clock::now();
-            //connections.emplace_back(new_shared);
+            auto diff = conn->created_time - conn->accepted_time;
             q.enqueue(std::move(conn));
+            if(chrono::duration_cast<chrono::milliseconds>(diff).count() > 10000){
+                LOG(ERROR) << "Connect Timeout";
+            }
         }
         accept();
     });

@@ -24,27 +24,29 @@ using tcp = boost::asio::ip::tcp;
 class http_connection : public std::enable_shared_from_this<http_connection> {
 public:
     http_connection(boost::asio::io_context & context): socket(context), has_socket(true), created_time(chrono::steady_clock::now()) {};
-    ~http_connection(){}
+    ~http_connection(){
+        DLOG_IF(ERROR,!safe_to_destruct) << "HTTP Connection closed improperly";
+    }
     tcp::socket socket;
     shared_ptr<http_connection> get_ptr() { return shared_from_this(); }
     
     void close(boost::asio::io_context & work_thread_context, boost::beast::error_code & ec){
         socket.shutdown(tcp::socket::shutdown_both, ec);
-        boost::asio::io_context::strand s(work_thread_context);
-        s.wrap([this](){
-            boost::system::error_code close_err;
-            socket.close(close_err);
-            if(close_err) {
-                LOG(ERROR) << close_err.message();
-            }
-        });
+        boost::system::error_code close_err;
+        socket.close(close_err);
+        if(close_err) {
+            LOG(ERROR) << close_err.message();
+        }
         closed_time = chrono::steady_clock::now();
+        safe_to_destruct = true;
     }
     chrono::steady_clock::time_point created_time;
     chrono::steady_clock::time_point accepted_time;
     chrono::steady_clock::time_point closed_time;
+    bool safe_to_destruct = false;
 private:
     bool has_socket = false;
+    
     
 };
 
