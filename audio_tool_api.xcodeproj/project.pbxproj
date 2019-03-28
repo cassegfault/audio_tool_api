@@ -19,6 +19,9 @@
 		D6437E2421E28ECA00651678 /* stats_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6437E2221E28ECA00651678 /* stats_client.cpp */; };
 		D6437E3321E4D17B00651678 /* libglog.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D6437E3221E4D17B00651678 /* libglog.0.dylib */; };
 		D6437E3521E4D51E00651678 /* config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6437E3421E4D51E00651678 /* config.cpp */; };
+		D646BD60224CDA480054B2AD /* libswscale.5.3.100.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D646BD5F224CDA480054B2AD /* libswscale.5.3.100.dylib */; };
+		D646BD66224CDB180054B2AD /* libssl.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D646BD65224CDB180054B2AD /* libssl.1.0.0.dylib */; };
+		D646BD68224CDB290054B2AD /* libcrypto.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D646BD67224CDB290054B2AD /* libcrypto.1.0.0.dylib */; };
 		D64F642521E6204300A1C99C /* auth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F642321E6204300A1C99C /* auth.cpp */; };
 		D64F642A21E6380500A1C99C /* libcurl.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F642921E6380500A1C99C /* libcurl.4.dylib */; };
 		D64F643221E764BF00A1C99C /* user.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F643021E764BF00A1C99C /* user.cpp */; };
@@ -76,8 +79,6 @@
 		D66911A72241985F000E2690 /* st_http_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D66911A52241985F000E2690 /* st_http_server.cpp */; };
 		D66911AA22425D9C000E2690 /* tpc_http_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D66911A822425D9C000E2690 /* tpc_http_server.cpp */; };
 		D67E369E21B2C8B1008BE6F9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67E369D21B2C8B1008BE6F9 /* main.cpp */; };
-		D67E36AB21B2CA32008BE6F9 /* libssl.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36A921B2CA32008BE6F9 /* libssl.1.0.0.dylib */; };
-		D67E36AC21B2CA32008BE6F9 /* libcrypto.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36AA21B2CA32008BE6F9 /* libcrypto.1.0.0.dylib */; };
 		D67E36AF21B2ED3F008BE6F9 /* libboost_coroutine.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36AE21B2ED3F008BE6F9 /* libboost_coroutine.dylib */; };
 		D67E36B321B2F85A008BE6F9 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36B221B2F85A008BE6F9 /* libboost_system-mt.dylib */; };
 		D67E36B521B2FA91008BE6F9 /* libboost_thread-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36B421B2FA91008BE6F9 /* libboost_thread-mt.dylib */; };
@@ -86,7 +87,6 @@
 		D69B8375222EA45E00A5EDC0 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D69B8373222EA45E00A5EDC0 /* test.cpp */; };
 		D69B83B522345EBE00A5EDC0 /* http_work_thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D69B83B322345EBE00A5EDC0 /* http_work_thread.cpp */; };
 		D6C269EE21BAE14A009D9D01 /* multipart_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = D6C269ED21BAE14A009D9D01 /* multipart_parser.c */; };
-		D6C269F121BB1275009D9D01 /* libswscale.5.3.100.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D6C269EF21BB1275009D9D01 /* libswscale.5.3.100.dylib */; };
 		D6C269F221BB1275009D9D01 /* libswresample.3.3.100.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D6C269F021BB1275009D9D01 /* libswresample.3.3.100.dylib */; };
 		D6C269F621BBFEFF009D9D01 /* processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6C269F421BBFEFF009D9D01 /* processor.cpp */; };
 		D6CB6F1F2237D3530095EA6B /* http_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6CB6F1D2237D3530095EA6B /* http_server.cpp */; };
@@ -143,6 +143,12 @@
 		D6437E3121E4C96E00651678 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		D6437E3221E4D17B00651678 /* libglog.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglog.0.dylib; path = ../../../../usr/local/Cellar/glog/0.3.4_1/lib/libglog.0.dylib; sourceTree = "<group>"; };
 		D6437E3421E4D51E00651678 /* config.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = config.cpp; sourceTree = "<group>"; };
+		D646BD5F224CDA480054B2AD /* libswscale.5.3.100.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswscale.5.3.100.dylib; path = ../../../../usr/local/Cellar/ffmpeg/4.1.2/lib/libswscale.5.3.100.dylib; sourceTree = "<group>"; };
+		D646BD61224CDAA10054B2AD /* libssl.35.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.35.dylib; path = ../../../../usr/lib/libssl.35.dylib; sourceTree = "<group>"; };
+		D646BD63224CDAB80054B2AD /* libcrypto.35.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.35.dylib; path = ../../../../usr/lib/libcrypto.35.dylib; sourceTree = "<group>"; };
+		D646BD65224CDB180054B2AD /* libssl.1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.1.0.0.dylib; path = ../../../../usr/local/Cellar/openssl/1.0.2r/lib/libssl.1.0.0.dylib; sourceTree = "<group>"; };
+		D646BD67224CDB290054B2AD /* libcrypto.1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.1.0.0.dylib; path = ../../../../usr/local/Cellar/openssl/1.0.2r/lib/libcrypto.1.0.0.dylib; sourceTree = "<group>"; };
+		D646BD69224CDB9C0054B2AD /* managed_thread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = managed_thread.h; sourceTree = "<group>"; };
 		D64F642321E6204300A1C99C /* auth.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = auth.cpp; sourceTree = "<group>"; };
 		D64F642421E6204300A1C99C /* auth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = auth.h; sourceTree = "<group>"; };
 		D64F642721E6376A00A1C99C /* requests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = requests.h; sourceTree = "<group>"; };
@@ -246,10 +252,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D646BD68224CDB290054B2AD /* libcrypto.1.0.0.dylib in Frameworks */,
+				D646BD66224CDB180054B2AD /* libssl.1.0.0.dylib in Frameworks */,
+				D646BD60224CDA480054B2AD /* libswscale.5.3.100.dylib in Frameworks */,
 				D669116F223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib in Frameworks */,
 				D64F642A21E6380500A1C99C /* libcurl.4.dylib in Frameworks */,
 				D6437E3321E4D17B00651678 /* libglog.0.dylib in Frameworks */,
-				D6C269F121BB1275009D9D01 /* libswscale.5.3.100.dylib in Frameworks */,
 				D6C269F221BB1275009D9D01 /* libswresample.3.3.100.dylib in Frameworks */,
 				D62F0AF621B483FE0085A671 /* libavdevice.58.5.100.dylib in Frameworks */,
 				D62F0AF221B483BC0085A671 /* libavformat.58.20.100.dylib in Frameworks */,
@@ -260,8 +268,6 @@
 				D67E36B721B2FADD008BE6F9 /* libSystem.B.dylib in Frameworks */,
 				D67E36B521B2FA91008BE6F9 /* libboost_thread-mt.dylib in Frameworks */,
 				D67E36B321B2F85A008BE6F9 /* libboost_system-mt.dylib in Frameworks */,
-				D67E36AB21B2CA32008BE6F9 /* libssl.1.0.0.dylib in Frameworks */,
-				D67E36AC21B2CA32008BE6F9 /* libcrypto.1.0.0.dylib in Frameworks */,
 				D67E36AF21B2ED3F008BE6F9 /* libboost_coroutine.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -284,6 +290,7 @@
 				D6437E2221E28ECA00651678 /* stats_client.cpp */,
 				D6437E2321E28ECA00651678 /* stats_client.h */,
 				D6437E2521E2B3A500651678 /* timer.h */,
+				D646BD69224CDB9C0054B2AD /* managed_thread.h */,
 			);
 			path = utilities;
 			sourceTree = "<group>";
@@ -351,6 +358,11 @@
 		D67E36A421B2C9A3008BE6F9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D646BD67224CDB290054B2AD /* libcrypto.1.0.0.dylib */,
+				D646BD65224CDB180054B2AD /* libssl.1.0.0.dylib */,
+				D646BD63224CDAB80054B2AD /* libcrypto.35.dylib */,
+				D646BD61224CDAA10054B2AD /* libssl.35.dylib */,
+				D646BD5F224CDA480054B2AD /* libswscale.5.3.100.dylib */,
 				D669116E223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib */,
 				D64F642921E6380500A1C99C /* libcurl.4.dylib */,
 				D6437E3221E4D17B00651678 /* libglog.0.dylib */,
@@ -766,8 +778,8 @@
 		D67E36A221B2C8B1008BE6F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
@@ -779,11 +791,13 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.68.0_1/lib,
+					/usr/local/Cellar/boost/1.69.0/lib,
 					/usr/local/Cellar/openssl/1.0.2q/lib,
 					/usr/local/Cellar/ffmpeg/4.1.1/lib,
 					"/usr/local/Cellar/mysql-connector-c++/1.1.9_2/lib",
-					/usr/local/Cellar/glog/0.3.5_3/lib,
+					/usr/local/Cellar/glog/0.4.0/lib,
+					/usr/local/Cellar/ffmpeg/4.1.2/lib,
+					/usr/local/Cellar/openssl/1.0.2r/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -792,8 +806,8 @@
 		D67E36A321B2C8B1008BE6F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
@@ -805,11 +819,13 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/boost/1.68.0_1/lib,
+					/usr/local/Cellar/boost/1.69.0/lib,
 					/usr/local/Cellar/openssl/1.0.2q/lib,
 					/usr/local/Cellar/ffmpeg/4.1.1/lib,
 					"/usr/local/Cellar/mysql-connector-c++/1.1.9_2/lib",
-					/usr/local/Cellar/glog/0.3.5_3/lib,
+					/usr/local/Cellar/glog/0.4.0/lib,
+					/usr/local/Cellar/ffmpeg/4.1.2/lib,
+					/usr/local/Cellar/openssl/1.0.2r/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
