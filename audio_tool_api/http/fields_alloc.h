@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2017 Vinnie Falco (vinnie dot falco at gmail dot com)
+// Copyright (c) 2016-2019 Vinnie Falco (vinnie dot falco at gmail dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -7,8 +7,8 @@
 // Official repository: https://github.com/boostorg/beast
 //
 
-#ifndef fields_alloc_h
-#define fields_alloc_h
+#ifndef BOOST_BEAST_EXAMPLE_FIELDS_ALLOC_HPP
+#define BOOST_BEAST_EXAMPLE_FIELDS_ALLOC_HPP
 
 #include <boost/throw_exception.hpp>
 #include <cstdlib>
@@ -43,7 +43,7 @@ namespace fields_detail {
         construct(std::size_t size)
         {
             auto p = new char[sizeof(static_pool) + size];
-            return *(new(p) static_pool{size});
+            return *(::new(p) static_pool{size});
         }
         
         static_pool&
@@ -166,7 +166,8 @@ public:
     void
     construct(U* ptr, Args&&... args)
     {
-        ::new((void*)ptr) U(std::forward<Args>(args)...);
+        ::new(static_cast<void*>(ptr)) U(
+                                         std::forward<Args>(args)...);
     }
     
     template<class U>

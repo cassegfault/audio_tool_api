@@ -8,7 +8,7 @@
 
 #include "http_request.h"
 #include <iostream>
-http_request::http_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req): _req(req) {
+http_request::http_request(http::request<http::string_body> const& req): _req(req) {
     verb = _req.method();
     
     // Parse the URL parameters

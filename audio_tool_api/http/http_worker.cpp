@@ -18,28 +18,32 @@ void http_worker::start(shared_ptr<http_connection> _conn) {
     conn.swap(_conn);
     _has_finished = false;
     _has_started = true;
+    response.reset();
+    request_.reset();
+    response.emplace();
+    request_.emplace();
     read();
 }
 
 void http_worker::read(){
-    parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    http::async_read(conn->socket, buffer_, *parser_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error));
+    //parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    http::async_read(conn->socket, buffer_, *request_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error, 0));
 }
-void http_worker::read_handler(boost::beast::error_code & ec){
+void http_worker::read_handler(boost::beast::error_code & ec, size_t bytes_transferred){
     if(ec){
         LOG(ERROR) << ec.message();
         stats()->increment("read_errors");
         close_socket(ec);
     } else {
-        process((*parser_).get());
+        process();
     }
 }
-void http_worker::process(http::request<body_t, fields_t> const & req){
+void http_worker::process(){
     //LOG(INFO) << req.target();
     stats()->increment("requests");
     timer request_timer;
     request_timer.start();
-    http_request req_data(req);
+    http_request req_data(*request_);
     
     std::unique_ptr<base_handler> found_handler(find_route(req_data.path));
     
@@ -48,10 +52,10 @@ void http_worker::process(http::request<body_t, fields_t> const & req){
     }
     
     if(found_handler->requires_authentication){
-        if(req.find("session-token") == req.end()) {
+        if(request_->find("session-token") == request_->end()) {
             return build_response(http::status::unauthorized, "Unauthorized");
         }
-        string token = req.at("session-token").to_string();
+        string token = request_->at("session-token").to_string();
         
         try {
             found_handler->user.fill_by_token(found_handler->db, token);
@@ -72,7 +76,7 @@ void http_worker::process(http::request<body_t, fields_t> const & req){
         found_handler->init(work_thread_context);
         // we need to use a req_data pointer if
         found_handler->setup(&req_data);
-        switch (req.method()) {
+        switch (request_->method()) {
             case http::verb::head:
                 found_handler->head(req_data);
                 break;
@@ -94,7 +98,7 @@ void http_worker::process(http::request<body_t, fields_t> const & req){
                 
             default:
                 stats()->time("request_length", (int)request_timer.microseconds());
-                return build_response(http::status::bad_request, "Invalid request-method '" + req.method_string().to_string() + "'\r\n");
+                return build_response(http::status::bad_request, "Invalid request-method '" + request_->method_string().to_string() + "'\r\n");
                 break;
         }
         found_handler->finish(req_data);
@@ -112,7 +116,8 @@ void http_worker::process(http::request<body_t, fields_t> const & req){
 }
 
 void http_worker::build_response(HTTPResponse & handler_result){
-    response.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    //response.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple());
+    //response.reset();
     response->result(handler_result.status);
     
     response->set(http::field::server, "Audio Tool API");
@@ -127,12 +132,13 @@ void http_worker::build_response(HTTPResponse & handler_result){
     response->body() = handler_result.get_content();
     response->prepare_payload();
     
-    serializer.emplace(*response);
+    //serializer.emplace(*response);
     write();
 }
 
 void http_worker::build_response(http::status status, string body){
-    response.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    //response.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple());
+    //response.reset();
     
     response->result(status);
     response->keep_alive(false);
@@ -144,14 +150,14 @@ void http_worker::build_response(http::status status, string body){
     response->body() = j.dump();
     response->prepare_payload();
     
-    serializer.emplace(*response);
+    //serializer.emplace(*response);
     write();
 }
 
 void http_worker::write() {
-    http::async_write(conn->socket,*serializer,boost::bind(&http_worker::write_handler, this,boost::asio::placeholders::error));
+    http::async_write(conn->socket,*response,boost::bind(&http_worker::write_handler, this,boost::asio::placeholders::error, 0));
 }
-void http_worker::write_handler(boost::beast::error_code & ec){
+void http_worker::write_handler(boost::beast::error_code & ec, size_t unused){
     if(ec){
         LOG(ERROR) << ec.message();
         stats()->increment("write_errors");
@@ -167,7 +173,7 @@ void http_worker::close_socket(boost::beast::error_code & ec){
     LOG_IF(ERROR, total_diff > 30 * 1000) << "Connection lasted longer than 30s";
     stats()->time("request_length", diff);
     stats()->time("long_request_length", total_diff);
-    serializer.reset();
+    //serializer.reset();
     response.reset();
     _has_finished = true;
     conn.reset();

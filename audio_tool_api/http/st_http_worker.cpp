@@ -76,7 +76,7 @@ unique_ptr<base_handler> st_http_worker::find_route(string path) {
     return nullptr;
 }
 
-void st_http_worker::process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req) {
+void st_http_worker::process_request(http::request<request_body_t> const& req) {
     LOG(INFO) << req.target();
     stats()->increment("requests");
     timer request_timer;

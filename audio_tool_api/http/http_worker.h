@@ -16,6 +16,7 @@
 #include <boost/optional/optional.hpp>
 #include <boost/bind.hpp>
 #include <boost/asio/strand.hpp>
+#include <boost/beast/version.hpp>
 
 #include <boost/beast/http.hpp>
 
@@ -58,17 +59,18 @@ private:
         boost::beast::flat_static_buffer<8192> buffer_;
         boost::optional<http::request_parser<body_t, alloc_t>> parser_;
         alloc_t alloc_{8192};
+        boost::optional<http::request<http::string_body>> request_;
     
         // For writes
-        boost::optional<http::response<body_t, fields_t>> response;
+        boost::optional<http::response<http::string_body>> response;
         boost::optional<http::response_serializer<body_t, fields_t>> serializer;
     
     unique_ptr<base_handler> find_route(string path);
     
     void read();
-    void read_handler(boost::beast::error_code & ec);
-    void write_handler(boost::beast::error_code & ec);
-    void process(http::request<body_t, fields_t> const & req);
+    void read_handler(boost::beast::error_code & ec, size_t bytes_transferred);
+    void write_handler(boost::beast::error_code & ec, size_t unused);
+    void process();
     void build_response(HTTPResponse & handler_result);
     void build_response(http::status error_code, string body);
     void write();

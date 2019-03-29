@@ -28,7 +28,7 @@ class http_request {
     using request_body_t = http::string_body;
     using alloc_t = fields_alloc<char>;
 public:
-    http_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req);
+    http_request(http::request<http::string_body> const& req);
     ~http_request();
     
     string path;
@@ -36,7 +36,7 @@ public:
     unordered_map<string, string> url_params;
     unordered_map<string, string> headers;
     http::verb verb;
-    http::request<request_body_t, http::basic_fields<alloc_t>> const& _req;
+    http::request<http::string_body> const& _req;
     
     vector<string> files;
     

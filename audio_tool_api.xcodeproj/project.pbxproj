@@ -75,9 +75,6 @@
 		D669119C22411C4E000E2690 /* libcrypto.1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36AA21B2CA32008BE6F9 /* libcrypto.1.0.0.dylib */; };
 		D669119D22411C4E000E2690 /* libboost_coroutine.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36AE21B2ED3F008BE6F9 /* libboost_coroutine.dylib */; };
 		D66911A322411C5B000E2690 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D69B837D22328FF100A5EDC0 /* main.cpp */; };
-		D66911A422419663000E2690 /* st_http_worker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67E36C521B338D5008BE6F9 /* st_http_worker.cpp */; };
-		D66911A72241985F000E2690 /* st_http_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D66911A52241985F000E2690 /* st_http_server.cpp */; };
-		D66911AA22425D9C000E2690 /* tpc_http_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D66911A822425D9C000E2690 /* tpc_http_server.cpp */; };
 		D67E369E21B2C8B1008BE6F9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67E369D21B2C8B1008BE6F9 /* main.cpp */; };
 		D67E36AF21B2ED3F008BE6F9 /* libboost_coroutine.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36AE21B2ED3F008BE6F9 /* libboost_coroutine.dylib */; };
 		D67E36B321B2F85A008BE6F9 /* libboost_system-mt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D67E36B221B2F85A008BE6F9 /* libboost_system-mt.dylib */; };
@@ -582,10 +579,8 @@
 				D67E36C221B32515008BE6F9 /* base_handler.cpp in Sources */,
 				D64F645821EAE4D000A1C99C /* user.cpp in Sources */,
 				D6F4010E21F3BBD7009EC8E3 /* project.cpp in Sources */,
-				D66911AA22425D9C000E2690 /* tpc_http_server.cpp in Sources */,
 				D64F644C21EA473400A1C99C /* http_exception.cpp in Sources */,
 				D67E369E21B2C8B1008BE6F9 /* main.cpp in Sources */,
-				D66911A72241985F000E2690 /* st_http_server.cpp in Sources */,
 				D64F643221E764BF00A1C99C /* user.cpp in Sources */,
 				D6437E3521E4D51E00651678 /* config.cpp in Sources */,
 				D6437E2421E28ECA00651678 /* stats_client.cpp in Sources */,
@@ -605,7 +600,6 @@
 				D6D2885222348B5D005B47AA /* http_worker.cpp in Sources */,
 				D69B8375222EA45E00A5EDC0 /* test.cpp in Sources */,
 				D64F643821E7681300A1C99C /* database.cpp in Sources */,
-				D66911A422419663000E2690 /* st_http_worker.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
