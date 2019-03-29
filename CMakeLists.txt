@@ -19,9 +19,6 @@ set(SOURCE_FILES
 	audio_tool_api/http/http_server.cpp
 	audio_tool_api/http/http_work_thread.cpp
 	audio_tool_api/http/http_worker.cpp
-	audio_tool_api/http/st_http_server.cpp
-	audio_tool_api/http/st_http_worker.cpp
-	audio_tool_api/http/tpc_http_server.cpp
 	audio_tool_api/http/multipart_parser.c
 	audio_tool_api/main.cpp
 	audio_tool_api/models/file.cpp
