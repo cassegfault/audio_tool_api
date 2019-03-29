@@ -18,15 +18,12 @@
 #include <vector>
 #include <glog/logging.h>
 #include "../utilities/json.hpp"
-#include "fields_alloc.h"
 #include "multipart_parser.h"
 
 using namespace std;
 namespace http = boost::beast::http;
 
 class http_request {
-    using request_body_t = http::string_body;
-    using alloc_t = fields_alloc<char>;
 public:
     http_request(http::request<http::string_body> const& req);
     ~http_request();

@@ -188,7 +188,6 @@
 		D67E36C121B32515008BE6F9 /* base_handler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = base_handler.h; sourceTree = "<group>"; };
 		D67E36C521B338D5008BE6F9 /* st_http_worker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = st_http_worker.cpp; sourceTree = "<group>"; };
 		D67E36C621B338D5008BE6F9 /* st_http_worker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = st_http_worker.h; sourceTree = "<group>"; };
-		D67E36C821B33975008BE6F9 /* fields_alloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fields_alloc.h; sourceTree = "<group>"; };
 		D69B8373222EA45E00A5EDC0 /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
 		D69B8374222EA45E00A5EDC0 /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
 		D69B837D22328FF100A5EDC0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -390,7 +389,6 @@
 		D67E36B821B2FCA5008BE6F9 /* http */ = {
 			isa = PBXGroup;
 			children = (
-				D67E36C821B33975008BE6F9 /* fields_alloc.h */,
 				D64F644B21EA473400A1C99C /* http_exception.cpp */,
 				D64F644A21EA2D0800A1C99C /* http_exception.h */,
 				D62F0AE621B44F860085A671 /* http_request.cpp */,
