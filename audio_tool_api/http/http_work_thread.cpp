@@ -9,17 +9,42 @@
 #include "http_work_thread.h"
 
 void http_work_thread::start() {
+    
+    _thread = thread(&http_work_thread::thread_runner, this);
+    //thread_runner();
+}
+
+void http_work_thread::thread_runner(){
     _is_running = true;
     num_workers = config()->num_workers;
     for(int x = 0; x < num_workers; x++){
         workers.emplace_back(work_thread_context);
     }
-    _thread = thread(&http_work_thread::thread_runner, this);
+    //run_loop();
+    accept_loop();
+    work_thread_context.run();
 }
 
-void http_work_thread::thread_runner(){
-    run_loop();
-    work_thread_context.run();
+void http_work_thread::accept(){
+    boost::system::error_code err;
+    shared_ptr<http_connection> conn2 = make_shared<http_connection>(work_thread_context);
+    tcp::socket sock (work_thread_context);
+    acceptor->accept(sock,err);
+    if(!err){
+        //accepted
+        LOG(INFO) << "new accept works maybe";
+    } else {
+        LOG(ERROR) << err.message();
+    }
+}
+void http_work_thread::accept_loop() {
+    if (_is_running) {
+        dequeue();
+        // Allow other asynchronous work to run
+        poll_timer.cancel();
+        poll_timer.expires_from_now(boost::posix_time::millisec(2));
+        poll_timer.async_wait(boost::bind(&http_work_thread::accept_loop,this));
+    }
 }
 
 void http_work_thread::run_loop(){

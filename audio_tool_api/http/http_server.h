@@ -25,19 +25,23 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 class http_server {
 public:
-    http_server(): ioc(1) {};
+    http_server(): ioc(make_shared<boost::asio::io_context>(1)) {};
     ~http_server(){};
     
     void start();
     void poll();
     void run();
+    void stop(){ is_running = false; };
+    
+    bool is_running;
     
 private:
     void accept();
-    boost::optional<tcp::acceptor> acceptor;
+    void raw_accept();
+    shared_ptr<tcp::acceptor> acceptor;
     shared_ptr<tcp::socket> active_connection;
     shared_ptr<http_connection> conn;
-    boost::asio::io_context ioc;
+    shared_ptr<boost::asio::io_context> ioc;
     
     vector<shared_ptr<http_connection> > connections;
     moodycamel::ConcurrentQueue<shared_ptr<http_connection>> q;

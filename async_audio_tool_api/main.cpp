@@ -13,6 +13,7 @@
 #include <boost/lockfree/queue.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
+#include <boost/bind.hpp>
 
 #include "external/concurrentqueue.h"
 
@@ -31,17 +32,31 @@ public:
     int num;
 };
 
+void somefunc(boost::asio::io_context * ioc){
+    ioc->poll();
+}
+string make_daytime_string(){
+    time_t now = time(0);
+    return ctime(&now);
+}
+
 int main(int argc, const char * argv[]) {
     
-    shared_ptr<mything> inta(make_shared<mything>(1));
-    shared_ptr<mything> intb(inta);
+    boost::asio::io_context ioc1, ioc2;
+    tcp::acceptor acc(ioc1, tcp::endpoint(tcp::v4(), 9091));
+    tcp::socket socket(ioc2);
+    thread t(boost::bind(&somefunc,&ioc2));
+    acceptor.accept(socket);
     
-    inta = make_shared<mything>(2);
+    std::string message = make_daytime_string();
+        
+    boost::system::error_code ignored_error;
+    boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
     
-    intb->num = 3;
-    
-    cout << "inta: " << inta->num << endl;
-    cout << "intb: " << intb->num << endl;
+    for (;;)
+    {
+        ioc2.poll();
+    }
     
     
     return 0;

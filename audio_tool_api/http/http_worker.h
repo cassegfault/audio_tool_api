@@ -44,6 +44,7 @@ public:
     
     void start(shared_ptr<http_connection> _conn);
     bool has_finished() { return _has_finished; }
+    bool is_running() { return _has_started && !_has_finished; }
 private:
     shared_ptr<http_connection> conn;
     boost::asio::io_context & work_thread_context;
