@@ -95,14 +95,21 @@ void http_server::raw_accept(){
         LOG(ERROR) << "Error listening on port: " << std::strerror(errno);
         return;
     }
+    int retries = 0;
     while(is_running) {
         if(open_connections > 800){
+            if(retries > 10) {
+                LOG_EVERY_N(WARNING, 10) << "Retried " << retries << " times";
+            }
             this_thread::sleep_for(chrono::milliseconds(1));
+            retries++;
             continue;
         }
+        retries = 0;
         if((sock = ::accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
             if(errno == EMFILE || errno == ENFILE){
                 this_thread::sleep_for(chrono::milliseconds(1));
+                LOG(WARNING) << "Received Too Many Files Open Error";
                 continue;
             }else {
                 LOG(ERROR) << "Error accepting: " << std::strerror(errno);
