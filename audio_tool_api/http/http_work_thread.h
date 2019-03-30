@@ -65,13 +65,16 @@ public:
         if(_is_running && worker_it != workers.end()){
             worker_it->start(conn);
         }*/
-        //queue.push(conn);
-        queue.enqueue(conn);
+        queue.push(conn);
+        //queue.enqueue(conn);
     }
     void dequeue(){
-        if(!queue.try_dequeue(*conn)){
+        /*if(!queue.try_dequeue(*conn)){
             return;
-        }
+        }*/
+        if(queue.empty())
+            return;
+        auto conn = queue.front();
         
         vector<http_worker>::iterator worker_it;
         for (worker_it = workers.begin(); worker_it != workers.end(); worker_it++) {
@@ -80,13 +83,14 @@ public:
         }
         
         if(_is_running && worker_it != workers.end()){
-            worker_it->start(*conn);
+            worker_it->start(conn);
+            queue.pop();
         }
     }
 private:
     shared_ptr<tcp::acceptor> acceptor;
     vector<http_worker> workers;
-    moodycamel::ConcurrentQueue<shared_ptr<http_connection>> queue;
+    queue<shared_ptr<http_connection>> queue;
     void run_loop();
     void accept_loop();
     void accept();
