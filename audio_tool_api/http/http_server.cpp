@@ -97,8 +97,13 @@ void http_server::raw_accept(){
     }
     while(is_running) {
         if((sock = ::accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
-            LOG(ERROR) << "Error accepting: " << std::strerror(errno);
-            return;
+            if(errno == EMFILE || errno == ENFILE){
+                this_thread::sleep_for(chrono::milliseconds(1));
+                continue;
+            }else {
+                LOG(ERROR) << "Error accepting: " << std::strerror(errno);
+                return;
+            }
         }
         vector<http_work_thread>::iterator tt = threads.end();
         double min_load = -1.0;
