@@ -10,7 +10,7 @@
 #define http_server_hpp
 
 #include <stdio.h>
-
+#include <atomic>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/optional/optional.hpp>
 
@@ -25,7 +25,7 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 class http_server {
 public:
-    http_server(): ioc(make_shared<boost::asio::io_context>(1)) {};
+    http_server(): ioc(make_shared<boost::asio::io_context>(1)), open_connections(0) {};
     ~http_server(){};
     
     void start();
@@ -46,6 +46,7 @@ private:
     vector<shared_ptr<http_connection> > connections;
     moodycamel::ConcurrentQueue<shared_ptr<http_connection>> q;
     vector<http_work_thread> threads;
+    atomic<int> open_connections;
 };
 
 #endif /* http_server_hpp */

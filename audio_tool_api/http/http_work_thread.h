@@ -55,7 +55,7 @@ public:
     }
     
     
-    void enqueue(shared_ptr<http_connection> & conn) {
+    void enqueue(shared_ptr<http_connection> conn) {
         /*vector<http_worker>::iterator worker_it;
         for (worker_it = workers.begin(); worker_it != workers.end(); worker_it++) {
             if(worker_it->has_finished())
@@ -65,7 +65,7 @@ public:
         if(_is_running && worker_it != workers.end()){
             worker_it->start(conn);
         }*/
-        _queue.push(conn);
+        _queue.push(std::move(conn));
         //queue.enqueue(conn);
     }
     void dequeue(){

@@ -32,7 +32,7 @@ void http_server::start(){
 }
 
 void http_server::accept(){
-    
+    /*
     active_connection = make_shared<tcp::socket>(acceptor->get_io_context());
     conn = make_shared<http_connection>(acceptor->get_io_context());
     // This assumes a maximum FD_SETSIZE of 1024 which is standard on most machines
@@ -67,7 +67,7 @@ void http_server::accept(){
             }
         }
         //accept();
-    //});
+    //});*/
 }
 void http_server::raw_accept(){
     int server_fd, sock;
@@ -96,6 +96,10 @@ void http_server::raw_accept(){
         return;
     }
     while(is_running) {
+        if(open_connections > 800){
+            this_thread::sleep_for(chrono::milliseconds(1));
+            continue;
+        }
         if((sock = ::accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
             if(errno == EMFILE || errno == ENFILE){
                 this_thread::sleep_for(chrono::milliseconds(1));
@@ -124,10 +128,10 @@ void http_server::raw_accept(){
             LOG(ERROR) << "All threads overloaded";
             return;
         }
-        conn = make_shared<http_connection>(*tt->io_context());
+        conn = make_shared<http_connection>(*tt->io_context(), open_connections);
         conn->socket.assign(boost::asio::ip::tcp::v4(), sock);
         conn->accepted_time = chrono::steady_clock::now();
-        tt->enqueue(conn);
+        tt->enqueue(std::move(conn));
         // tell the thread to handle the connection
     }
     

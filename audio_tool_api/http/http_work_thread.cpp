@@ -27,7 +27,8 @@ void http_work_thread::thread_runner(){
 
 void http_work_thread::accept(){
     boost::system::error_code err;
-    shared_ptr<http_connection> conn2 = make_shared<http_connection>(work_thread_context);
+    atomic<int>counter;
+    shared_ptr<http_connection> conn2 = make_shared<http_connection>(work_thread_context, counter);
     tcp::socket sock (work_thread_context);
     acceptor->accept(sock,err);
     if(!err){
