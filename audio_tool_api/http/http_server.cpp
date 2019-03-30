@@ -98,12 +98,13 @@ void http_server::raw_accept(){
     int retries = 0;
     while(is_running) {
         if(open_connections > 800){
-            if(retries > 10) {
-                LOG_EVERY_N(WARNING, 10) << "Retried " << retries << " times";
-            }
+            
             this_thread::sleep_for(chrono::milliseconds(1));
             retries++;
             continue;
+        }
+        if(retries > 0) {
+            LOG(WARNING) << "Waited " << retries << "ms to accept";
         }
         retries = 0;
         if((sock = ::accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
