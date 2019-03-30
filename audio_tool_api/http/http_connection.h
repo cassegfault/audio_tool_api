@@ -42,6 +42,7 @@ public:
     }
     chrono::steady_clock::time_point created_time;
     chrono::steady_clock::time_point accepted_time;
+    chrono::steady_clock::time_point started_time;
     chrono::steady_clock::time_point closed_time;
     bool safe_to_destruct = false;
 private:

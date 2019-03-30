@@ -16,6 +16,7 @@ void http_worker::start(shared_ptr<http_connection> _conn) {
     //conn.reset(_conn.get());
     //conn = std::move(_conn);
     conn.swap(_conn);
+    conn->started_time = chrono::steady_clock::now();
     _has_finished = false;
     _has_started = true;
     response.reset();
@@ -115,7 +116,8 @@ void http_worker::process(){
     if(request_timer.milliseconds() > 10000) {
         DLOG(WARNING) << "Handler took " << request_timer.milliseconds() << "ms";
     }
-    stats()->time("request_length", (int)request_timer.milliseconds());
+    auto ms = request_timer.milliseconds();
+    stats()->time("handler_length", (int)ms);
     build_response(found_handler->response);
 }
 
@@ -172,11 +174,22 @@ void http_worker::write_handler(boost::beast::error_code & ec, size_t unused){
 
 void http_worker::close_socket(boost::beast::error_code & ec){
     conn->close(work_thread_context, ec);
+    /*
+     created               started
+        |----------|----------|--------|
+                accepted            closed
+     closed - created is total time
+     started - accepted is time in queue
+     */
     int diff = (int)chrono::duration_cast<chrono::milliseconds>(conn->closed_time - conn->accepted_time).count();
+    int queue_diff = (int)chrono::duration_cast<chrono::milliseconds>(conn->started_time - conn->accepted_time).count();
     int total_diff = (int)chrono::duration_cast<chrono::milliseconds>(conn->closed_time - conn->created_time).count();
+    int run_diff = (int)chrono::duration_cast<chrono::milliseconds>(conn->closed_time - conn->started_time).count();
     LOG_IF(ERROR, total_diff > 30 * 1000) << "Connection lasted longer than 30s";
     stats()->time("request_length", diff);
     stats()->time("long_request_length", total_diff);
+    stats()->time("queue_length", queue_diff);
+    stats()->time("run_length", run_diff);
     //serializer.reset();
     response.reset();
     _has_finished = true;
