@@ -97,7 +97,7 @@ void http_worker::process(){
                 break;
                 
             default:
-                stats()->time("request_length", (int)request_timer.microseconds());
+                stats()->time("request_length", (int)request_timer.milliseconds());
                 return build_response(http::status::bad_request, "Invalid request-method '" + request_->method_string().to_string() + "'\r\n");
                 break;
         }
@@ -111,7 +111,11 @@ void http_worker::process(){
     } catch (...) {
         return build_response(http::status::internal_server_error, "Unhandled exception caught by the server – Please wait and try again");
     }
-    
+    request_timer.stop();
+    if(request_timer.milliseconds() > 10000) {
+        DLOG(WARNING) << "Handler took " << request_timer.milliseconds() << "ms";
+    }
+    stats()->time("request_length", (int)request_timer.milliseconds());
     build_response(found_handler->response);
 }
 
