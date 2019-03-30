@@ -10,7 +10,7 @@
 #include <chrono>
 #include <fstream>
 void test_handler::get(http_request request_data) {
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    //std::this_thread::sleep_for(std::chrono::seconds(10));
     /*stringstream s("str");
     ifstream urandom("/dev/urandom", ios::in|ios::binary);
     int random_value = 0, new_random = 0;
