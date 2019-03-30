@@ -182,7 +182,7 @@ void http_worker::close_socket(boost::beast::error_code & ec){
      started - accepted is time in queue
      */
     int diff = (int)chrono::duration_cast<chrono::milliseconds>(conn->closed_time - conn->accepted_time).count();
-    int queue_diff = (int)chrono::duration_cast<chrono::milliseconds>(conn->started_time - conn->accepted_time).count();
+    int queue_diff = (int)chrono::duration_cast<chrono::milliseconds>(conn->started_time - conn->created_time).count();
     int total_diff = (int)chrono::duration_cast<chrono::milliseconds>(conn->closed_time - conn->created_time).count();
     int run_diff = (int)chrono::duration_cast<chrono::milliseconds>(conn->closed_time - conn->started_time).count();
     LOG_IF(ERROR, total_diff > 30 * 1000) << "Connection lasted longer than 30s";

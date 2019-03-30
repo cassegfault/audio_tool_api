@@ -101,13 +101,13 @@ void http_server::raw_accept(){
             return;
         }
         vector<http_work_thread>::iterator tt = threads.end();
-        double min_load = 1.0;
+        double min_load = -1.0;
         for(vector<http_work_thread>::iterator t = threads.begin(); t < threads.end(); t++){
             double thread_load = t->load_factor();
             if(thread_load < 0.2){
                 tt = t;
                 break;
-            } else if (thread_load < min_load) {
+            } else if (thread_load < min_load || min_load < 0.0) {
                 min_load = thread_load;
                 tt = t;
             } else if (tt == threads.end()){
