@@ -110,6 +110,9 @@ void http_server::raw_accept(){
             } else if (thread_load < min_load) {
                 min_load = thread_load;
                 tt = t;
+            } else if (tt == threads.end()){
+                // make sure it will get enqueued somewhere
+                tt = t;
             }
         }
         if (tt == threads.end()) {
