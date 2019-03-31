@@ -91,7 +91,7 @@ void http_server::raw_accept(){
         LOG(ERROR) << "Error binding to port: " << std::strerror(errno);
         return;
     }
-    if (listen(server_fd, 3) < 0) {
+    if (listen(server_fd, SOMAXCONN) < 0) {
         LOG(ERROR) << "Error listening on port: " << std::strerror(errno);
         return;
     }

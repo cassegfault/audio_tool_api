@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <thread>
+#include "utilities/base64.h"
 #include "base_handler.h"
 
 class test_handler : public base_handler {

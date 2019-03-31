@@ -10,20 +10,17 @@
 #include <chrono>
 #include <fstream>
 void test_handler::get(http_request request_data) {
-    //std::this_thread::sleep_for(std::chrono::seconds(10));
-    /*stringstream s("str");
+    const int readsize = 4096;
+    char * data = (char *)malloc(readsize);
     ifstream urandom("/dev/urandom", ios::in|ios::binary);
-    int random_value = 0, new_random = 0;
-    size_t size = sizeof(random_value);
     
-    for(int x = 0; x < 1024 * 1024; x++){
-        urandom.read(reinterpret_cast<char*>(&new_random), size);
-        
-    }
+    // read 4kb
+    urandom.read(data, readsize);
     if(urandom){
         urandom.close();
-    }*/
+    }
     nlohmann::json j;
-    j["response"] = "slept";
+    
+    j["response"] = base64_encode((const unsigned char *)data, readsize);
     response.set_content(j);
 }
