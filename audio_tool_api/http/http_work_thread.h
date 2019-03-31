@@ -42,7 +42,7 @@ public:
     int num_workers = 4;
     shared_ptr<http_connection> * conn = new shared_ptr<http_connection>();
     double load_factor(){
-        double load = (double)_queue.size();
+        double load = (double)_queue.size_approx();
         for(auto & w : workers) {
             if(w.is_running()) {
                 load += 1.0;
@@ -65,16 +65,17 @@ public:
         if(_is_running && worker_it != workers.end()){
             worker_it->start(conn);
         }*/
-        _queue.push(std::move(conn));
-        //queue.enqueue(conn);
+        //_queue.push(std::move(conn));
+        _queue.enqueue(conn);
     }
     void dequeue(){
-        /*if(!queue.try_dequeue(*conn)){
+        if(!_queue.try_dequeue(*conn)){
             return;
-        }*/
-        if(_queue.empty())
+        }
+        /*if(_queue.empty())
             return;
         auto conn = _queue.front();
+         */
         
         vector<http_worker>::iterator worker_it;
         for (worker_it = workers.begin(); worker_it != workers.end(); worker_it++) {
@@ -83,14 +84,15 @@ public:
         }
         
         if(_is_running && worker_it != workers.end()){
-            worker_it->start(conn);
-            _queue.pop();
+            worker_it->start(*conn);
+            //_queue.pop();
         }
     }
 private:
     shared_ptr<tcp::acceptor> acceptor;
     vector<http_worker> workers;
-    queue<shared_ptr<http_connection>> _queue;
+    //queue<shared_ptr<http_connection>> _queue;
+    moodycamel::ConcurrentQueue<shared_ptr<http_connection>> _queue;
     void run_loop();
     void accept_loop();
     void accept();
