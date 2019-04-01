@@ -33,6 +33,7 @@
 		D6531AB421B44CB7005034F8 /* decode_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6531AB221B44CB7005034F8 /* decode_file.cpp */; };
 		D6647F2422522C0500B33F4D /* st_http_worker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D67E36C521B338D5008BE6F9 /* st_http_worker.cpp */; };
 		D6647F2522522D8E00B33F4D /* st_http_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D66911A52241985F000E2690 /* st_http_server.cpp */; };
+		D6647F262252303E00B33F4D /* tpc_http_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D66911A822425D9C000E2690 /* tpc_http_server.cpp */; };
 		D669116F223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D669116E223FECD0000E2690 /* libmysqlcppconn.7.1.1.9.dylib */; };
 		D669117222411C4E000E2690 /* http_connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D6D2884A22346928005B47AA /* http_connection.cpp */; };
 		D669117322411C4E000E2690 /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D64F644D21EA582100A1C99C /* base64.cpp */; };
@@ -579,6 +580,7 @@
 				D67E36C221B32515008BE6F9 /* base_handler.cpp in Sources */,
 				D64F645821EAE4D000A1C99C /* user.cpp in Sources */,
 				D6F4010E21F3BBD7009EC8E3 /* project.cpp in Sources */,
+				D6647F262252303E00B33F4D /* tpc_http_server.cpp in Sources */,
 				D64F644C21EA473400A1C99C /* http_exception.cpp in Sources */,
 				D67E369E21B2C8B1008BE6F9 /* main.cpp in Sources */,
 				D6647F2522522D8E00B33F4D /* st_http_server.cpp in Sources */,

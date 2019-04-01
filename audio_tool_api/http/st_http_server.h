@@ -42,6 +42,8 @@ public:
         }
     }
     
+    void stop() { is_running = false; }
+    
 private:
     boost::optional<tcp::acceptor> acceptor;
     shared_ptr<tcp::socket> active_connection;
