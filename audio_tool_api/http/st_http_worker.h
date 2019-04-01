@@ -9,12 +9,11 @@
 #ifndef http_worker_h
 #define http_worker_h
 
-#include "fields_alloc.h"
 #include "routes.h"
 #include "http_worker.h"
 #include "http_exception.h"
-#include "../utilities/stats_client.h"
-#include "../utilities/timer.h"
+#include "utilities/stats_client.h"
+#include "utilities/timer.h"
 
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
@@ -51,7 +50,6 @@ public:
         sync_accept();
     }
 private:
-    using alloc_t = fields_alloc<char>;
     using request_body_t = http::string_body;
     
     // The acceptor used to listen for incoming connections.
@@ -62,22 +60,15 @@ private:
     
     // The buffer for performing reads
     boost::beast::flat_static_buffer<8192> buffer_;
+    boost::optional<http::request<http::string_body>> request_;
     
-    // The allocator used for the fields in the request and reply.
-    alloc_t alloc_{8192};
-    
-    // The parser for reading the requests
-    boost::optional<http::request_parser<request_body_t, alloc_t>> parser_;
     
     // The timer putting a time limit on requests.
     boost::asio::basic_waitable_timer<std::chrono::steady_clock> request_deadline_{
         acceptor_.get_executor().context(), (std::chrono::steady_clock::time_point::max)()};
     
     // The string-based response message.
-    boost::optional<http::response<http::string_body, http::basic_fields<alloc_t>>> string_response_;
-    
-    // The string-based response serializer.
-    boost::optional<http::response_serializer<http::string_body, http::basic_fields<alloc_t>>> string_serializer_;
+    boost::optional<http::response<http::string_body>> string_response_;
     
     void accept();
     void sync_accept();
@@ -85,7 +76,7 @@ private:
     void read_request();
     void sync_read();
     
-    void process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req);
+    void process_request();
     
     void write();
     void sync_write();

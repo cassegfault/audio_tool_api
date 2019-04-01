@@ -13,6 +13,7 @@ void st_http_worker::accept() {
     boost::beast::error_code ec;
     socket_.close(ec);
     buffer_.consume(buffer_.size());
+    request_.emplace();
     
     acceptor_.async_accept(socket_, [this](boost::beast::error_code ec) {
         if (ec) {
@@ -47,24 +48,25 @@ void st_http_worker::read_request() {
     // We construct the dynamic body with a 1MB limit
     // to prevent vulnerability to buffer attacks.
     //
-    parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    parser_->body_limit(1024 * 1024 * 1024);
-    http::async_read(socket_, buffer_, *parser_, [this](boost::beast::error_code ec, std::size_t) {
+    //parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    //parser_->body_limit(1024 * 1024 * 1024);
+    
+    http::async_read(socket_, buffer_, *request_, [this](boost::beast::error_code ec, std::size_t) {
         
         if (ec){
             accept();
         }
         else{
-            process_request(parser_->get());
+            process_request();
             write();
         }
     });
 }
 void st_http_worker::sync_read(){
-    parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    parser_->body_limit(1024 * 1024 * 1024);
-    http::read(socket_, buffer_, *parser_);
-    process_request(parser_->get());
+    //parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    //parser_->body_limit(1024 * 1024 * 1024);
+    http::read(socket_, buffer_, *request_);
+    process_request();
     sync_write();
 }
 
@@ -76,12 +78,12 @@ unique_ptr<base_handler> st_http_worker::find_route(string path) {
     return nullptr;
 }
 
-void st_http_worker::process_request(http::request<request_body_t> const& req) {
-    LOG(INFO) << req.target();
+void st_http_worker::process_request() {
+    LOG(INFO) << request_->target();
     stats()->increment("requests");
     timer request_timer;
     request_timer.start();
-    http_request req_data(req);
+    http_request req_data(*request_);
     
     std::unique_ptr<base_handler> found_handler(find_route(req_data.path));
     
@@ -92,11 +94,11 @@ void st_http_worker::process_request(http::request<request_body_t> const& req) {
     }
     
     if(found_handler->requires_authentication){
-        if(req.find("session-token") == req.end()) {
+        if(request_->find("session-token") == request_->end()) {
             send_bad_response(http::status::unauthorized, "Unauthorized");
             return;
         }
-        string token = req.at("session-token").to_string();
+        string token = request_->at("session-token").to_string();
         
         try {
             found_handler->user.fill_by_token(found_handler->db, token);
@@ -116,7 +118,7 @@ void st_http_worker::process_request(http::request<request_body_t> const& req) {
     //try {
         // we need to use a req_data pointer if
         found_handler->setup(&req_data);
-        switch (req.method()) {
+        switch (request_->method()) {
             case http::verb::head:
                 found_handler->head(req_data);
                 break;
@@ -138,7 +140,7 @@ void st_http_worker::process_request(http::request<request_body_t> const& req) {
                 
             default:
                 stats()->time("request_length", (int)request_timer.microseconds());
-                return send_bad_response(http::status::bad_request, "Invalid request-method '" + req.method_string().to_string() + "'\r\n");
+                return send_bad_response(http::status::bad_request, "Invalid request-method '" + request_->method_string().to_string() + "'\r\n");
                 break;
         }
         found_handler->finish(req_data);
@@ -155,7 +157,8 @@ void st_http_worker::process_request(http::request<request_body_t> const& req) {
     
     
     // TODO: swap out string response for empty response if empty_body flag is set
-    string_response_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    //string_response_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    string_response_.emplace();
     string_response_->result(found_handler->response.status);
     
     string_response_->set(http::field::server, "Audio Tool API");
@@ -169,30 +172,31 @@ void st_http_worker::process_request(http::request<request_body_t> const& req) {
     string_response_->body() = found_handler->response.get_content();
     string_response_->prepare_payload();
     
-    string_serializer_.emplace(*string_response_);
+    //string_serializer_.emplace(*string_response_);
     
     stats()->time("request_length", (int)request_timer.microseconds());
 }
 
 void st_http_worker::write(){
-    http::async_write(socket_, *string_serializer_, [this](boost::beast::error_code ec, std::size_t) {
+    http::async_write(socket_, *string_response_, [this](boost::beast::error_code ec, std::size_t) {
         socket_.shutdown(tcp::socket::shutdown_send, ec);
-        string_serializer_.reset();
+        //string_serializer_.reset();
         string_response_.reset();
         accept();
     });
 }
 
 void st_http_worker::sync_write(){
-    http::write(socket_, *string_serializer_);
+    http::write(socket_, *string_response_);
     socket_.shutdown(tcp::socket::shutdown_send);
-    string_serializer_.reset();
+    //string_serializer_.reset();
     string_response_.reset();
     sync_accept();
 }
 
 void st_http_worker::send_bad_response(http::status status, std::string const& error) {
-    string_response_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    //string_response_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
+    string_response_.emplace();
     
     string_response_->result(status);
     string_response_->keep_alive(false);
@@ -203,11 +207,11 @@ void st_http_worker::send_bad_response(http::status status, std::string const& e
     string_response_->body() = j.dump();
     string_response_->prepare_payload();
     
-    string_serializer_.emplace(*string_response_);
+    //string_serializer_.emplace(*string_response_);
     
-    http::async_write(socket_, *string_serializer_, [this](boost::beast::error_code ec, std::size_t) {
+    http::async_write(socket_, *string_response_, [this](boost::beast::error_code ec, std::size_t) {
         socket_.shutdown(tcp::socket::shutdown_send, ec);
-        string_serializer_.reset();
+        //string_serializer_.reset();
         string_response_.reset();
         accept();
     });
