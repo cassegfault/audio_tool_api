@@ -22,7 +22,7 @@ void st_http_server::start(){
             }
             while(is_running) {
                 ioc.poll();
-                this_thread::sleep_for(chrono::microseconds(1));
+                this_thread::sleep_for(chrono::milliseconds(1));
             }
         });
     }

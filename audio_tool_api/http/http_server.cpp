@@ -112,7 +112,7 @@ void http_server::raw_accept(){
                 this_thread::sleep_for(chrono::milliseconds(1));
                 LOG(WARNING) << "Received Too Many Files Open Error";
                 continue;
-            }else {
+            } else {
                 LOG(ERROR) << "Error accepting: " << std::strerror(errno);
                 return;
             }

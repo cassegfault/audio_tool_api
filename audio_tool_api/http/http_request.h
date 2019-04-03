@@ -51,8 +51,6 @@ private:
     multipart_parser_settings m_callbacks;
     int current_file_index = 0;
     string current_file_data;
-    
-    
 };
 
 #endif /* http_request_h */

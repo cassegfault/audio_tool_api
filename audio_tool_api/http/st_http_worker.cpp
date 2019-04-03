@@ -12,7 +12,6 @@ void st_http_worker::accept() {
     // Clean up any previous connection.
     boost::beast::error_code ec;
     socket_.close(ec);
-    buffer_.consume(buffer_.size());
     request_.emplace();
     
     acceptor_.async_accept(socket_, [this](boost::beast::error_code ec) {
@@ -30,7 +29,7 @@ void st_http_worker::sync_accept() {
     // Clean up any previous connection.
     boost::beast::error_code ec;
     socket_.close(ec);
-    buffer_.consume(buffer_.size());
+    request_.emplace();
     
     acceptor_.accept(socket_);
     sync_read();
