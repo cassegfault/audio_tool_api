@@ -28,9 +28,10 @@ using namespace std;
 using tcp = boost::asio::ip::tcp;
 
 class http_work_thread {
+    friend class http_work_thread;
     using q_type =moodycamel::ConcurrentQueue<shared_ptr<http_connection>>;
 public:
-    http_work_thread(q_type & q, shared_ptr<tcp::acceptor> _acceptor) : _is_running(false), _thread(), _q(q), poll_timer(work_thread_context), acceptor(_acceptor) {};
+    http_work_thread(q_type & q, vector<http_work_thread> * _threads) : _is_running(false), _thread(), threads(_threads), _q(q), poll_timer(work_thread_context) {};
     http_work_thread(http_work_thread && other): _is_running(bool(other._is_running)), _thread(std::move(other._thread)), _q(other._q), poll_timer(work_thread_context) {}
     ~http_work_thread() {
         join();
@@ -70,7 +71,24 @@ public:
     }
     void dequeue(){
         if(!_queue.try_dequeue(*conn)){
-            return;
+            // return;
+            // steal work
+            double max_load = -1.0, current_load_factor;
+            http_work_thread * tt = nullptr;
+            for(auto & t : *threads) {
+                current_load_factor=t.load_factor();
+                if(current_load_factor > max_load){
+                    tt = &t;
+                    max_load = current_load_factor;
+                }
+            }
+            if(tt != nullptr) {
+                if (!tt->_queue.try_dequeue(*conn)) {
+                    return;
+                }
+            } else {
+                return;
+            }
         }
         /*if(_queue.empty())
             return;
@@ -88,11 +106,11 @@ public:
             //_queue.pop();
         }
     }
+    moodycamel::ConcurrentQueue<shared_ptr<http_connection>> _queue;
 private:
-    shared_ptr<tcp::acceptor> acceptor;
     vector<http_worker> workers;
     //queue<shared_ptr<http_connection>> _queue;
-    moodycamel::ConcurrentQueue<shared_ptr<http_connection>> _queue;
+    
     void run_loop();
     void accept_loop();
     void accept();
@@ -103,6 +121,7 @@ private:
     q_type & _q;
     boost::asio::io_context work_thread_context{1}; // single threaded io_context (this thread)
     boost::asio::deadline_timer poll_timer;
+    vector<http_work_thread> * threads;
 };
 
 #endif /* http_work_thread_hpp */

@@ -30,7 +30,7 @@ void http_work_thread::accept(){
     atomic<int>counter;
     shared_ptr<http_connection> conn2 = make_shared<http_connection>(work_thread_context, counter);
     tcp::socket sock (work_thread_context);
-    acceptor->accept(sock,err);
+    //acceptor->accept(sock,err);
     if(!err){
         //accepted
         LOG(INFO) << "new accept works maybe";
@@ -43,7 +43,7 @@ void http_work_thread::accept_loop() {
         dequeue();
         // Allow other asynchronous work to run
         poll_timer.cancel();
-        poll_timer.expires_from_now(boost::posix_time::millisec(2));
+        poll_timer.expires_from_now(boost::posix_time::millisec(1));
         poll_timer.async_wait(boost::bind(&http_work_thread::accept_loop,this));
     }
 }

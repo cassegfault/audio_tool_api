@@ -16,7 +16,7 @@ void http_server::start(){
     is_running = true;
     
     for (int x = 0; x < config()->num_threads; x++) {
-        threads.emplace_back(q, acceptor);
+        threads.emplace_back(q, &threads);
     }
     
     LOG(INFO) << "Listening on " << config()->server_host << ':' << config()->server_port;
