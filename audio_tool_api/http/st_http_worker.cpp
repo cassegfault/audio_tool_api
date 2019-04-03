@@ -186,11 +186,15 @@ void st_http_worker::write(){
 }
 
 void st_http_worker::sync_write(){
-    http::write(socket_, *string_response_);
+    try {
+        http::write(socket_, *string_response_);
+    } catch(boost::system::system_error e){
+        LOG(ERROR) << e.what();
+    }
     socket_.shutdown(tcp::socket::shutdown_send);
     //string_serializer_.reset();
     string_response_.reset();
-    sync_accept();
+    //sync_accept();
 }
 
 void st_http_worker::send_bad_response(http::status status, std::string const& error) {

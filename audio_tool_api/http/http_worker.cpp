@@ -23,12 +23,15 @@ void http_worker::start(shared_ptr<http_connection> _conn) {
     request_.reset();
     response.emplace();
     request_.emplace();
+    if(conn->is_raw){
+        conn->build_socket(work_thread_context);
+    }
     read();
 }
 
 void http_worker::read(){
     //parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    http::async_read(conn->socket, buffer_, *request_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error, 0));
+    http::async_read(*conn->socket, buffer_, *request_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error, 0));
 }
 void http_worker::read_handler(boost::beast::error_code & ec, size_t bytes_transferred){
     if(ec){
@@ -161,7 +164,7 @@ void http_worker::build_response(http::status status, string body){
 }
 
 void http_worker::write() {
-    http::async_write(conn->socket,*response,boost::bind(&http_worker::write_handler, this,boost::asio::placeholders::error, 0));
+    http::async_write(*conn->socket,*response,boost::bind(&http_worker::write_handler, this,boost::asio::placeholders::error, 0));
 }
 void http_worker::write_handler(boost::beast::error_code & ec, size_t unused){
     if(ec){

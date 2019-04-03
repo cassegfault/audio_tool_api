@@ -136,8 +136,8 @@ void http_server::raw_accept(){
             LOG(ERROR) << "All threads overloaded";
             return;
         }
-        conn = make_shared<http_connection>(*tt->io_context(), open_connections);
-        conn->socket.assign(boost::asio::ip::tcp::v4(), sock);
+        conn = make_shared<http_connection>(sock, open_connections);
+        //conn->socket->assign(boost::asio::ip::tcp::v4(), sock);
         conn->accepted_time = chrono::steady_clock::now();
         tt->enqueue(std::move(conn));
         // tell the thread to handle the connection
