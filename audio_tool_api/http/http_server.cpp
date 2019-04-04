@@ -14,14 +14,15 @@ void http_server::start(){
     tcp::endpoint endpoint(address,port);
     //acceptor = std::make_shared<tcp::acceptor>(*ioc, endpoint);
     is_running = true;
+    threads = make_shared<vector<http_work_thread>>();
     
     for (int x = 0; x < config()->num_threads; x++) {
-        threads.emplace_back(q, &threads);
+        threads->emplace_back(q, threads);
     }
     
     LOG(INFO) << "Listening on " << config()->server_host << ':' << config()->server_port;
     
-    for(auto & t : threads) {
+    for(auto & t : *threads) {
         t.start();
     }
     /*while(is_running){
@@ -117,9 +118,9 @@ void http_server::raw_accept(){
                 return;
             }
         }
-        vector<http_work_thread>::iterator tt = threads.end();
+        vector<http_work_thread>::iterator tt = threads->end();
         double min_load = -1.0;
-        for(vector<http_work_thread>::iterator t = threads.begin(); t < threads.end(); t++){
+        for(vector<http_work_thread>::iterator t = threads->begin(); t < threads->end(); t++){
             double thread_load = t->load_factor();
             if(thread_load < 0.2){
                 tt = t;
@@ -127,12 +128,12 @@ void http_server::raw_accept(){
             } else if (thread_load < min_load || min_load < 0.0) {
                 min_load = thread_load;
                 tt = t;
-            } else if (tt == threads.end()){
+            } else if (tt == threads->end()){
                 // make sure it will get enqueued somewhere
                 tt = t;
             }
         }
-        if (tt == threads.end()) {
+        if (tt == threads->end()) {
             LOG(ERROR) << "All threads overloaded";
             return;
         }

@@ -45,7 +45,7 @@ private:
     
     vector<shared_ptr<http_connection> > connections;
     moodycamel::ConcurrentQueue<shared_ptr<http_connection>> q;
-    vector<http_work_thread> threads;
+    shared_ptr<vector<http_work_thread> > threads;
     atomic<int> open_connections;
     unordered_map<string, std::pair<int,double> > request_timings;
 };
