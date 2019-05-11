@@ -26,6 +26,7 @@
 #include "handlers/base_handler.h"
 #include "utilities/stats_client.h"
 #include "utilities/timer.h"
+#include "utilities/config.h"
 
 namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
 using tcp = boost::asio::ip::tcp;

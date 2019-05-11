@@ -23,6 +23,7 @@ public:
     
     string server_host;
     int server_port;
+    string path_prefix;
     
     string statsd_host;
     int statsd_port;
