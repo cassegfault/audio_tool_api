@@ -68,6 +68,7 @@ string get_email(string token) {
 string get_token(string code){
     CURL *curl = curl_easy_init();
     CURLcode res;
+    code = curl_easy_unescape(curl, code.c_str(), code.length(), NULL);
     string response_body;
     
     string location ="https://www.googleapis.com/oauth2/v4/token";
@@ -103,7 +104,8 @@ string get_token(string code){
         return j["access_token"];
     } else {
         LOG(ERROR) << "Did not receive access token during Google OAuth flow";
-        return nullptr;
+        throw runtime_error("Did not receive access token during Google OAuth flow");
+        return ""; //nullptr;
     }
 }
 
@@ -116,27 +118,31 @@ void auth_handler::get(http_request request_data) {
         // OAuth Error
         couldNotAuth = true;
     } else if(request_data.has_param("code")) {
-        // OAuth Success
-        string token = get_token(request_data.url_params["code"]);
-        string email_address = get_email(token);
-        user.fill_by_email(db, email_address);
-        user.create_session(db);
-        
-        string location = "https://audiotool.v3x.pw/login/success/";
-        string escaped_token;
-        for(auto c : user.current_session.token) {
-            if(c == '/') {
-                escaped_token += "%2F";
-            } else if (c == '+') {
-                escaped_token += "%2B";
-            } else if (c == '=') {
-                escaped_token += "%3D";
-            } else {
-                escaped_token += c;
+        try {
+            // OAuth Success
+            string token = get_token(request_data.url_params["code"]);
+            string email_address = get_email(token);
+            user.fill_by_email(db, email_address);
+            user.create_session(db);
+            
+            string location = "https://audiotool.v3x.pw/login/success/";
+            string escaped_token;
+            for(auto c : user.current_session.token) {
+                if(c == '/') {
+                    escaped_token += "%2F";
+                } else if (c == '+') {
+                    escaped_token += "%2B";
+                } else if (c == '=') {
+                    escaped_token += "%3D";
+                } else {
+                    escaped_token += c;
+                }
             }
+            location += escaped_token;
+            response.headers.emplace("Location",location);
+        } catch(std::runtime_error e) {
+            couldNotAuth = true;
         }
-        location += escaped_token;
-        response.headers.emplace("Location",location);
         
     } else {
         couldNotAuth = true;
