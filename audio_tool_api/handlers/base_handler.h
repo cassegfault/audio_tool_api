@@ -11,33 +11,67 @@
 
 #include <stdio.h>
 #include <unordered_map>
+#include <glog/logging.h>
+#include <boost/asio/io_context.hpp>
+#include <boost/optional/optional.hpp>
+
 #include "../http/http_request.h"
 #include "../http/http_response.h"
+#include "../http/http_exception.h"
+
 #include "../utilities/config.h"
 #include "../utilities/database.h"
+#include "../utilities/serialize.h"
+#include "../models/user.h"
 
-class BaseHandler {
+class base_handler {
 public:
-    
-    BaseHandler();
-    ~BaseHandler(){
-        cout << "Handler Destructed" << endl;
+    base_handler();
+    ~base_handler(){
         db->close();
     };
     db::Connection *db;
     
-    virtual void get(HTTPRequest request_data);
-    virtual void post(HTTPRequest request_data);
-    virtual void put(HTTPRequest request_data);
-    virtual void delete_(HTTPRequest request_data);
-    virtual void options(HTTPRequest request_data);
-    virtual void head(HTTPRequest request_data);
+    virtual void get(http_request request_data);
+    virtual void post(http_request request_data);
+    virtual void put(http_request request_data);
+    virtual void delete_(http_request request_data);
+    virtual void options(http_request request_data);
+    virtual void head(http_request request_data);
+    
+    // Pre and post-firing hooks
+    virtual void setup(http_request *request_data) {};
+    virtual void finish(http_request request_data) {};
+    
+    // initialization for all handlers
+    void init(boost::asio::io_context & _work_thread_context) {
+        work_thread_context = &_work_thread_context;
+    };
     
     HTTPResponse response;
+    bool requires_authentication = true;
+    user_model user;
 
 private:
     string not_found_response = "404 Route not found";
     int not_found_status = 404;
+    boost::asio::io_context * work_thread_context;
+};
+
+template<typename model_type>
+class base_model_handler : public base_handler {
+public:
+    void setup(http_request * request_data) override {
+        request_data->parse_json();
+    }
+    
+    void finish(http_request request_data) override {
+        nlohmann::json json_response;
+        json_response["output"] = response_data;
+        json_response["status"] = response.status;
+        response.set_content(json_response);
+    }
+    model_type response_data;
 };
 
 #endif /* base_handler_h */

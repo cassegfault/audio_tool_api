@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cinttypes>
+#include <memory>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -35,6 +36,9 @@ public:
     void process();
     void set_input_content(uint8_t * data, size_t size);
     string get_output_content();
+    int get_output_samplerate() {
+        return output_sample_rate;
+    }
     
 private:
     // Initialization functions
@@ -83,6 +87,7 @@ private:
     
     uint8_t * input_buffer;
     size_t input_buffer_size;
+    int output_sample_rate;
     
     //unique_ptr<uint8_t> output_buffer;
     size_t output_buffer_size = 1024 ;

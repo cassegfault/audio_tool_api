@@ -60,14 +60,12 @@ static unordered_map<int, const char *> error_map{
     { 505, "HTTP Version Not Supported" }
 };
 
-const char * get_http_error(int code) {
-    return error_map[code];
-}
+const char * get_http_status(int code);
 
 class http_exception : public runtime_error {
 public:
     http_exception(int code, string error): http_code(code), runtime_error(error) {}
-    http_exception(int code): http_code(code), runtime_error(get_http_error(code)) {};
+    http_exception(int code): http_code(code), runtime_error(get_http_status(code)) {};
     int http_code;
 };
 

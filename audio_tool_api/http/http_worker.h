@@ -1,88 +1,74 @@
 //
-//  worker.hpp
+//  http_worker.hpp
 //  audio_tool_api
 //
-//  Created by Chris Pauley on 12/1/18.
-//  Copyright © 2018 Chris Pauley. All rights reserved.
+//  Created by Chris Pauley on 3/9/19.
+//  Copyright © 2019 Chris Pauley. All rights reserved.
 //
 
-#ifndef http_worker_h
-#define http_worker_h
+#ifndef http_worker_async_hpp
+#define http_worker_async_hpp
 
-#include "fields_alloc.h"
-#include "routes.h"
-#include "http_worker.h"
-#include "http_exception.h"
+#include <stdio.h>
 
-#include <boost/beast/core.hpp>
-#include <boost/beast/http.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/placeholders.hpp>
+#include <boost/optional/optional.hpp>
+#include <boost/bind.hpp>
+#include <boost/asio/strand.hpp>
 #include <boost/beast/version.hpp>
-#include <boost/asio.hpp>
-#include <boost/filesystem.hpp>
-#include <chrono>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <list>
-#include <memory>
-#include <string>
 
-namespace ip = boost::asio::ip;         // from <boost/asio.hpp>
-using tcp = boost::asio::ip::tcp;       // from <boost/asio.hpp>
+#include <boost/beast/http.hpp>
+
+#include "http/http_connection.h"
+#include "http/http_exception.h"
+#include "http/routes.h"
+#include "handlers/base_handler.h"
+#include "utilities/stats_client.h"
+#include "utilities/timer.h"
+
 namespace http = boost::beast::http;    // from <boost/beast/http.hpp>
+using tcp = boost::asio::ip::tcp;
+using namespace std;
 
-class HTTPWorker {
+class http_worker {
 public:
-    HTTPWorker(HTTPWorker const&) = delete;
-    HTTPWorker& operator=(HTTPWorker const&) = delete;
+    http_worker(boost::asio::io_context & _work_thread_context): work_thread_context(_work_thread_context) {};
+    http_worker(const http_worker& other): work_thread_context(other.work_thread_context) {}
+    ~http_worker(){
+        if(_has_started){
+            auto err = boost::system::errc::make_error_code(boost::system::errc::success);
+            close_socket(err);
+        }
+    };
     
-    HTTPWorker(tcp::acceptor& acceptor) : acceptor_(acceptor) { }
-    
-    void start() {
-        accept();
-        check_deadline();
-    }
-    
+    void start(shared_ptr<http_connection> _conn);
+    bool has_finished() { return _has_finished; }
+    bool is_running() { return _has_started && !_has_finished; }
 private:
-    using alloc_t = fields_alloc<char>;
-    using request_body_t = http::string_body;
+    shared_ptr<http_connection> conn;
+    boost::asio::io_context & work_thread_context;
+    bool _has_finished = true;
+    bool _has_started = false;
     
-    // The acceptor used to listen for incoming connections.
-    tcp::acceptor& acceptor_;
+    // I would like to replace the http stuff with either a smaller http parser or my own
+        // For reads
+        boost::beast::flat_static_buffer<8192> buffer_;
+        boost::optional<http::request<http::string_body>> request_;
     
-    // The socket for the currently connected client.
-    tcp::socket socket_{acceptor_.get_executor().context()};
+        // For writes
+        boost::optional<http::response<http::string_body>> response;
     
-    // The buffer for performing reads
-    boost::beast::flat_static_buffer<8192> buffer_;
+    unique_ptr<base_handler> find_route(string path);
     
-    // The allocator used for the fields in the request and reply.
-    alloc_t alloc_{8192};
-    
-    // The parser for reading the requests
-    boost::optional<http::request_parser<request_body_t, alloc_t>> parser_;
-    
-    // The timer putting a time limit on requests.
-    boost::asio::basic_waitable_timer<std::chrono::steady_clock> request_deadline_{
-        acceptor_.get_executor().context(), (std::chrono::steady_clock::time_point::max)()};
-    
-    // The string-based response message.
-    boost::optional<http::response<http::string_body, http::basic_fields<alloc_t>>> string_response_;
-    
-    // The string-based response serializer.
-    boost::optional<http::response_serializer<http::string_body, http::basic_fields<alloc_t>>> string_serializer_;
-    
-    void accept();
-    
-    void read_request();
-    
-    void process_request(http::request<request_body_t, http::basic_fields<alloc_t>> const& req);
-    
-    void send_bad_response(http::status status, std::string const& error);
-    
-    void check_deadline();
-    
-    unique_ptr<BaseHandler> find_route(string path);
+    void read();
+    void read_handler(boost::beast::error_code & ec, size_t bytes_transferred);
+    void write_handler(boost::beast::error_code & ec, size_t unused);
+    void process();
+    void build_response(HTTPResponse & handler_result);
+    void build_response(http::status error_code, string body);
+    void write();
+    void close_socket(boost::beast::error_code & ec);
 };
 
-#endif /* http_worker_h */
+#endif /* http_worker_hpp */

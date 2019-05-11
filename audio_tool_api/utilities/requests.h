@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <iomanip>
 #include <glog/logging.h>
 #include <curl/curl.h>
 

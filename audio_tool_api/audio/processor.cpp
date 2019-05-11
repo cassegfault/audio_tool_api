@@ -7,7 +7,8 @@
 //
 
 #include "processor.h"
-
+#undef av_err2str
+#define av_err2str(errnum) av_make_error_string((char*)__builtin_alloca(AV_ERROR_MAX_STRING_SIZE), AV_ERROR_MAX_STRING_SIZE, errnum)
 
 void AudioProcessor::execute(){
     int ret = AVERROR_EXIT;
@@ -73,11 +74,8 @@ void AudioProcessor::execute(){
     /* Write the trailer of the output file container. */
     if (write_output_file_trailer())
         goto cleanup;
-    cout << this->obd.size << endl;
     ret = 0;
 cleanup:
-    cout << "Execute cleanup" << endl;
-    
     if (fifo)
         av_audio_fifo_free(fifo);
     swr_free(&resample_context);
@@ -101,7 +99,6 @@ AudioProcessor::~AudioProcessor(){
     //av_freep(output_buffer);
     //av_freep(input_buffer);
     //delete input_buffer;
-    cout << "Processor Destructed" << endl;
 }
 
 int AudioProcessor::read_packet(void *opaque, uint8_t *buf, int buf_size){
@@ -196,39 +193,12 @@ int AudioProcessor::open_input_file()
     stream_number = -1;
     int audio_stream_count = 0;
     for(int i=0; i < input_format_context->nb_streams; i++) {
-        if(input_format_context->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if(input_format_context->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
             audio_stream_count++;
             stream_number = i;
             //break;
-        } else {
-            cout << "Stream found: ";
-            switch(input_format_context->streams[i]->codec->codec_type){
-                case AVMEDIA_TYPE_NB:
-                    cout << "NB";
-                    break;
-                case AVMEDIA_TYPE_DATA:
-                    cout << "DATA";
-                    break;
-                case AVMEDIA_TYPE_VIDEO:
-                    cout << "VIDEO";
-                    break;
-                case AVMEDIA_TYPE_UNKNOWN:
-                    cout << "??";
-                    break;
-                case AVMEDIA_TYPE_SUBTITLE:
-                    cout << "SUBTITLE";
-                    break;
-                case AVMEDIA_TYPE_ATTACHMENT:
-                    cout << "ATTACHMENT";
-                    break;
-                default:
-                    break;
-            }
-            cout << endl;
-
         }
     }
-    cout << "Found " << audio_stream_count << " / " << input_format_context->nb_streams << " Audio Streams" << endl;
     /*error = av_find_best_stream(input_format_context, AVMEDIA_TYPE_AUDIO, -1, -1, &input_codec, 0);
     if (error < 0) {
         av_log(NULL, AV_LOG_ERROR, "Cannot find an audio stream in the input file\n");

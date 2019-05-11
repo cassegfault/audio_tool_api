@@ -7,23 +7,15 @@
 //
 
 #include "decode_file.h"
-#include "../audio/audio_processor.h"
-#include <iostream>
-#include <fstream>
 
-void DecodeFileHandler::post(HTTPRequest request_data) {
-    AP p;
-    cout << "Files: " << request_data.files.size() << endl;
-    cout << "Files[0] size: " << request_data.files[0].size() << endl;
+
+void DecodeFileHandler::post(http_request request_data) {
+    if(request_data.files.size() == 0) {
+        throw http_exception(400, "Must send at least one file to use this endpoint");
+    }
     
-    ofstream f("test.mp3",ios_base::binary);
-    //f << request_data.files[0].data();
-    f.write(request_data.files[0].data(),request_data.files[0].size());
-    f.close();
-
-    //unique_ptr<uint8_t> sptr((uint8_t *)request_data.files[0].c_str());
+    AP p;
     p.set_input_content((uint8_t*)request_data.files[0].data(), request_data.files[0].size());
     p.process();
-    //cout << request_data._req.body().substr(0,400);
-    response.body = p.get_output_content();
+    response.set_content(p.get_output_content());
 }

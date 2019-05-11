@@ -8,14 +8,14 @@
 
 #include "http_request.h"
 #include <iostream>
-HTTPRequest::HTTPRequest(http::request<request_body_t, http::basic_fields<alloc_t>> const& req): _req(req) {
+http_request::http_request(http::request<http::string_body> const& req): _req(req) {
+    verb = _req.method();
+    
+    // Parse the URL parameters
     string current_param_name;
     string current_param_value;
     bool in_params = false;
     bool in_value = false;
-    
-    verb = _req.method();
-    
     for (const char& c : _req.target()) {
         if (c == '?' || c == '#') {
             path = current_param_name;
@@ -53,19 +53,24 @@ HTTPRequest::HTTPRequest(http::request<request_body_t, http::basic_fields<alloc_
     for(auto const& header : req) {
         headers.emplace(header.name_string(), header.value());
     }
-    if(headers.find("content-type") != headers.end()){
-        cout << "content-type: " << req.at("content-type") << endl;
+    
+    if(req.find("content-type") != req.end()){
+        content_type = string(req.at("content-type"));
+    } else {
+        //LOG(WARNING) << "Could not find content type";
+        content_type = "application/json";
     }
     
-    //if (req.at("content-type").find("multipart") > -1){
+    // Load in files from multipart requests
+    if (content_type.find("multipart") != string::npos){
         memset(&m_callbacks, 0, sizeof(multipart_parser_settings));
         m_callbacks.on_part_data = [](multipart_parser* p, const char *at, size_t length){
-            HTTPRequest * self = (HTTPRequest *)multipart_parser_get_data(p);
+            http_request * self = (http_request *)multipart_parser_get_data(p);
             self->current_file_data.append(at,length);
             return 0;
         };
         m_callbacks.on_part_data_end = [](multipart_parser* p){
-            HTTPRequest * self = (HTTPRequest *)multipart_parser_get_data(p);
+            http_request * self = (http_request *)multipart_parser_get_data(p);
             self->files.emplace_back(self->current_file_data);
             self->current_file_data.clear();
             return 0;
@@ -87,22 +92,24 @@ HTTPRequest::HTTPRequest(http::request<request_body_t, http::basic_fields<alloc_
         multipart_parser_set_data(m_parser, this);
         multipart_parser_execute(m_parser, req.body().c_str(), req.body().length());
     
-    //}
+    }     
+}
+
+http_request::~http_request(){
     
 }
 
-HTTPRequest::~HTTPRequest(){
-    
-}
-
-bool HTTPRequest::has_header(string header_name) {
+bool http_request::has_header(string header_name) {
     return headers.find(header_name) != headers.end();
 }
 
-bool HTTPRequest::has_param(string param_name) {
+bool http_request::has_param(string param_name) {
     return url_params.find(param_name) != url_params.end();
 }
 
-nlohmann::json HTTPRequest::json(){
-    return nlohmann::json::parse(_req.body());
+nlohmann::json http_request::parse_json(){
+    if(_req.body().length() > 0 && content_type.find("json") != string::npos){
+        json = nlohmann::json::parse(_req.body());
+    }
+    return json;
 }

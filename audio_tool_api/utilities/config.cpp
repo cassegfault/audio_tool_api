@@ -21,8 +21,6 @@ config_holder::config_holder(string filename){
     
     for (auto& el : j.items()) {
         string key = el.key();
-        //auto value = el.value();
-        cout << key << ": "<< j[key] << " - " << j[key].type_name() << endl;
         if (strcmp(key.c_str(),"server_host") == 0) {
             server_host = j[key];
         } else if (strcmp(key.c_str(),"server_port") == 0) {
@@ -51,6 +49,12 @@ config_holder::config_holder(string filename){
             google_auth_client_id = el.value();
         } else if (strcmp(key.c_str(),"google_auth_secret") == 0) {
             google_auth_secret = el.value();
+        } else if (strcmp(key.c_str(),"server_type") == 0) {
+            server_type = el.value();
+        } else if (strcmp(key.c_str(),"num_workers") == 0) {
+            num_workers = j[key];
+        } else if (strcmp(key.c_str(),"num_threads") == 0) {
+            num_threads = j[key];
         } else {
             DLOG(INFO) << "Unknown config parameter: " << key << " : ";
         }

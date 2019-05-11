@@ -16,32 +16,32 @@
 #include <boost/beast/http.hpp>
 #include <string>
 #include <vector>
+#include <glog/logging.h>
 #include "../utilities/json.hpp"
-#include "fields_alloc.h"
 #include "multipart_parser.h"
 
 using namespace std;
 namespace http = boost::beast::http;
 
-class HTTPRequest {
-    using request_body_t = http::string_body;
-    using alloc_t = fields_alloc<char>;
+class http_request {
 public:
-    HTTPRequest(http::request<request_body_t, http::basic_fields<alloc_t>> const& req);
-    ~HTTPRequest();
+    http_request(http::request<http::string_body> const& req);
+    ~http_request();
     
     string path;
+    string content_type;
     unordered_map<string, string> url_params;
     unordered_map<string, string> headers;
     http::verb verb;
-    http::request<request_body_t, http::basic_fields<alloc_t>> const& _req;
+    http::request<http::string_body> const& _req;
     
     vector<string> files;
     
     bool has_header(string header_name);
     bool has_param(string param_name);
     
-    nlohmann::json json();
+    nlohmann::json parse_json();
+    nlohmann::json json;
     
 private:
     string not_found_response = "404 Route not found";
@@ -51,8 +51,6 @@ private:
     multipart_parser_settings m_callbacks;
     int current_file_index = 0;
     string current_file_data;
-    
-    
 };
 
 #endif /* http_request_h */
