@@ -28,11 +28,8 @@ set(SOURCE_FILES
 	audio_tool_api/utilities/base64.cpp
 	audio_tool_api/utilities/config.cpp
 	audio_tool_api/utilities/database.cpp
-	audio_tool_api/utilities/stats_client.cpp
-	audio_tool_api/http/st_http_server.cpp
-	audio_tool_api/http/st_http_worker.cpp
-	audio_tool_api/http/tpc_http_server.cpp )
-	
+	audio_tool_api/utilities/stats_client.cpp)	
+
 link_directories(/usr/local/lib)
 
 add_executable(audio_tool_api ${SOURCE_FILES})
