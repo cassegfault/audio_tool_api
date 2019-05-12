@@ -43,11 +43,12 @@ void http_worker::read_handler(boost::beast::error_code & ec, size_t bytes_trans
     }
 }
 void http_worker::process(){
-    //LOG(INFO) << req.target();
     stats()->increment("requests");
     timer request_timer;
     request_timer.start();
     http_request req_data(*request_);
+    LOG(INFO) << request_->target();
+    DLOG(INFO) << req_data.path;
     
     std::unique_ptr<base_handler> found_handler(find_route(req_data.path));
     
@@ -76,7 +77,6 @@ void http_worker::process(){
     
     // Run the handler
     try {
-        
         found_handler->init(work_thread_context);
         // we need to use a req_data pointer if
         found_handler->setup(&req_data);

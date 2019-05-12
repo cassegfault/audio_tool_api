@@ -24,21 +24,17 @@ config_holder::config_holder(string filename){
         if (strcmp(key.c_str(),"server_host") == 0) {
             server_host = j[key];
         } else if (strcmp(key.c_str(),"server_port") == 0) {
-            
-                server_port  = el.value();
-            
+            server_port = el.value();
+        } else if (strcmp(key.c_str(),"path_prefix") == 0) {
+            path_prefix = el.value();
         } else if (strcmp(key.c_str(),"statsd_host") == 0) {
             statsd_host = el.value();
         } else if (strcmp(key.c_str(),"statsd_port") == 0) {
-            
-                statsd_port = el.value();
-            
+            statsd_port = el.value();
         } else if (strcmp(key.c_str(),"db_host") == 0) {
             db_host = j[key];
         } else if (strcmp(key.c_str(),"db_port") == 0) {
-            
-                db_port = el.value();
-            
+            db_port = el.value();
         } else if (strcmp(key.c_str(),"db_user") == 0) {
             db_user = el.value();
         } else if (strcmp(key.c_str(),"db_password") == 0) {
