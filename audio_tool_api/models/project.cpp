@@ -31,13 +31,15 @@ void project_model::update(db::Connection *db) {
 }
 
 void project_model::create(db::Connection *db) {
-    auto query = db->query("INSERT INTO projects (guid, creator_id, name, project_data) VALUES (UUID(), ?, ?, ?)", name, project_data, is_deleted);
+    auto query = db->query("INSERT INTO projects (guid, creator_id, name, project_data) VALUES (UUID(), ?, ?, ?)", creator_id, name, project_data);
     query.execute();
     auto confirmation_query = db->query("SELECT guid FROM projects WHERE id=LAST_INSERT_ID()");
     if (confirmation_query.row_count() < 1) {
         LOG(ERROR) << "Confirmation query failed when creating project";
         throw runtime_error("Project failed to create");
     }
+    auto results = confirmation_query.row();
+    guid = string(results["guid"]);
 }
 
 vector<project_model> get_projects_for_user(db::Connection * db, int user_id, bool with_data){
