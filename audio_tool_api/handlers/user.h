@@ -14,7 +14,7 @@
 
 class user_handler : public base_model_handler<user_model> {
 public:
-    void get(http_request request_data) override;
+    void get(http_request & request_data) override;
 };
 
 #endif /* user_hpp */

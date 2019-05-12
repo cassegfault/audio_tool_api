@@ -19,9 +19,9 @@
 class auth_handler : public base_handler {
 public:
     auth_handler() { requires_authentication = false; }
-    void post(http_request request_data) override;
-    void put(http_request request_data) override;
-    void get(http_request request_data) override;
+    void post(http_request & request_data) override;
+    void put(http_request & request_data) override;
+    void get(http_request & request_data) override;
 };
 
 #endif /* auth_hpp */

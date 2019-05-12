@@ -201,10 +201,11 @@ void http_worker::close_socket(boost::beast::error_code & ec){
 
 unique_ptr<base_handler> http_worker::find_route(string path) {
     string prefix = config()->path_prefix;
+    string _path = path;
     if(prefix.length() > 0 && path.find(prefix) == 0) {
-        path = path.substr(prefix.length());
+        _path = path.substr(prefix.length());
     }
-    auto found_route = application_routes.find(path);
+    auto found_route = application_routes.find(_path);
     if (found_route != application_routes.end()) {
         return unique_ptr<base_handler>(found_route->second());
     }

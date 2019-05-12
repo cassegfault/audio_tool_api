@@ -71,6 +71,7 @@ namespace db {
         
         // This gives us an interface for binding paramaters by type
         // from arbitrary parameters, a much simpler interface
+        void set_params() {}
         template<typename T>
         void set_params(const T & first_param) {
             set_any(first_param);

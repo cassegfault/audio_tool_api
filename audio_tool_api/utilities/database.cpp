@@ -45,7 +45,7 @@ namespace db{
     /*
      Query Class
     */
-    Query::Query(db::Connection * _conn, const char * query): conn(_conn) {
+    Query::Query(db::Connection * _conn, const char * query): conn(_conn), results(nullptr) {
         stmt = conn->sql->prepareStatement(query);
     };
     

@@ -8,7 +8,7 @@
 
 #include "project.h"
 
-void project_handler::get(http_request request_data) {
+void project_handler::get(http_request & request_data) {
     if(!request_data.has_param("guid")) {
         throw http_exception(400, "Must provide GUID of project");
     }
@@ -16,7 +16,7 @@ void project_handler::get(http_request request_data) {
     response_data.fill_by_guid(db, request_data.url_params["guid"]);
 }
 
-void project_handler::post(http_request request_data) {
+void project_handler::post(http_request & request_data) {
     if(request_data.json.find("guid") == request_data.json.end()) {
         throw http_exception(400, "Must provide GUID of project");
     }
@@ -31,7 +31,7 @@ void project_handler::post(http_request request_data) {
     response_data = project;
 }
 
-void project_handler::put(http_request request_data) {
+void project_handler::put(http_request & request_data) {
     if(request_data.json.find("name") == request_data.json.end()) {
         throw http_exception(400, "Must provide name of project");
     }
@@ -49,7 +49,7 @@ void project_handler::put(http_request request_data) {
     response_data = project;
 }
 
-void project_list_handler::get(http_request request_data) {
+void project_list_handler::get(http_request & request_data) {
     vector<project_model> projects = get_projects_for_user(db, user.id);
     response_data.swap(projects);
 }

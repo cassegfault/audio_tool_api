@@ -32,16 +32,16 @@ public:
     };
     db::Connection *db;
     
-    virtual void get(http_request request_data);
-    virtual void post(http_request request_data);
-    virtual void put(http_request request_data);
-    virtual void delete_(http_request request_data);
-    virtual void options(http_request request_data);
-    virtual void head(http_request request_data);
+    virtual void get(http_request & request_data);
+    virtual void post(http_request & request_data);
+    virtual void put(http_request & request_data);
+    virtual void delete_(http_request & request_data);
+    virtual void options(http_request & request_data);
+    virtual void head(http_request & request_data);
     
     // Pre and post-firing hooks
     virtual void setup(http_request *request_data) {};
-    virtual void finish(http_request request_data) {};
+    virtual void finish(http_request & request_data) {};
     
     // initialization for all handlers
     void init(boost::asio::io_context & _work_thread_context) {
@@ -65,7 +65,7 @@ public:
         request_data->parse_json();
     }
     
-    void finish(http_request request_data) override {
+    void finish(http_request & request_data) override {
         nlohmann::json json_response;
         json_response["output"] = response_data;
         json_response["status"] = response.status;

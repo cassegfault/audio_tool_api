@@ -18,14 +18,14 @@ class project_list : public serialize::json_list<project_model> {};
 
 class project_handler : public base_model_handler<project_model> {
 public:
-    void get(http_request request_data) override;
-    void post(http_request request_data) override;
-    void put(http_request request_data) override;
+    void get(http_request &request_data) override;
+    void post(http_request &request_data) override;
+    void put(http_request &request_data) override;
 };
 
 class project_list_handler : public base_model_handler<project_list> {
 public:
-    void get(http_request request_data) override;
+    void get(http_request & request_data) override;
 };
 
 #endif /* project_hpp */

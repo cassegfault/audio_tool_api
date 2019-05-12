@@ -17,7 +17,7 @@
 #include <fstream>
 
 class DecodeFileHandler : public base_handler {
-    void post(http_request request_data) override;
+    void post(http_request & request_data) override;
 };
 
 

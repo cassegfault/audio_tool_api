@@ -31,10 +31,10 @@ void project_model::update(db::Connection *db) {
 }
 
 void project_model::create(db::Connection *db) {
-    auto query = db->query("INSERT INTO projects (guid, user_id, name, project_data) VALUES (UUID(), ?, ?, ?)", name, project_data, is_deleted);
+    auto query = db->query("INSERT INTO projects (guid, creator_id, name, project_data) VALUES (UUID(), ?, ?, ?)", name, project_data, is_deleted);
     query.execute();
-    auto confirmation_query = db->raw_query("SELECT guid FROM projects WHERE id=LAST_INSERT_ID()");
-    if (query.row_count() < 1) {
+    auto confirmation_query = db->query("SELECT guid FROM projects WHERE id=LAST_INSERT_ID()");
+    if (confirmation_query.row_count() < 1) {
         LOG(ERROR) << "Confirmation query failed when creating project";
         throw runtime_error("Project failed to create");
     }

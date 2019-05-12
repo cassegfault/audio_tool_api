@@ -8,7 +8,7 @@
 
 #include "files.h"
 
-void file_handler::get(http_request request_data) {
+void file_handler::get(http_request & request_data) {
     if(request_data.json.find("guid") == request_data.json.end()) {
         throw http_exception(400, "Must provide GUID of file");
     }
@@ -18,7 +18,7 @@ void file_handler::get(http_request request_data) {
     response_data = f;
 }
 
-void file_handler::post(http_request request_data) {
+void file_handler::post(http_request & request_data) {
     if(!request_data.has_param("name")) {
         throw http_exception(400, "Must include name in URL parameters");
     }
@@ -38,7 +38,7 @@ void file_handler::post(http_request request_data) {
     response_data = f;
 }
 
-void file_data_handler::get(http_request request_data) {
+void file_data_handler::get(http_request & request_data) {
     if(!request_data.has_param("guid")) {
         throw http_exception(400, "Must include guid in URL parameters");
     }
@@ -48,7 +48,7 @@ void file_data_handler::get(http_request request_data) {
     response.content_type = "application/octet";
 }
 
-void file_list_handler::get(http_request request_data) {
+void file_list_handler::get(http_request & request_data) {
     vector<file_model> files = get_files_for_user(db, user.id);
     response_data.swap(files);
 }

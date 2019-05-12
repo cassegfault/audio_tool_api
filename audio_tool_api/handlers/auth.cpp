@@ -109,7 +109,7 @@ string get_token(string code){
     }
 }
 
-void auth_handler::get(http_request request_data) {
+void auth_handler::get(http_request & request_data) {
     // This handler always forwards
     response.status = 302;
     
@@ -153,7 +153,7 @@ void auth_handler::get(http_request request_data) {
     }
 }
 
-void auth_handler::post(http_request request_data) {
+void auth_handler::post(http_request & request_data) {
     nlohmann::json j = request_data.parse_json();
     string email = j["email"];
     string pass = j["password"];
@@ -168,7 +168,7 @@ void auth_handler::post(http_request request_data) {
     }
 }
 
-void auth_handler::put(http_request request_data) {
+void auth_handler::put(http_request & request_data) {
     nlohmann::json j = request_data.parse_json();
     string email = j["email"];
     string pass = j["password"];

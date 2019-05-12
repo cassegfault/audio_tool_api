@@ -9,7 +9,7 @@
 #include "test.h"
 #include <chrono>
 #include <fstream>
-void test_handler::get(http_request request_data) {
+void test_handler::get(http_request & request_data) {
     const int readsize = 4096;
     char * data = (char *)malloc(readsize);
     ifstream urandom("/dev/urandom", ios::in|ios::binary);

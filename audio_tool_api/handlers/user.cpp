@@ -8,6 +8,6 @@
 
 #include "user.h"
 
-void user_handler::get(http_request request_data){
+void user_handler::get(http_request & request_data){
     response_data = user;
 }

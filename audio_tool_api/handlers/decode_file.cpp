@@ -9,7 +9,7 @@
 #include "decode_file.h"
 
 
-void DecodeFileHandler::post(http_request request_data) {
+void DecodeFileHandler::post(http_request & request_data) {
     if(request_data.files.size() == 0) {
         throw http_exception(400, "Must send at least one file to use this endpoint");
     }

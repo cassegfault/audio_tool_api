@@ -22,32 +22,32 @@ base_handler::base_handler () {
 
 
 // If any of these definitions get called, it is because they have not been overriden. They are undefined routes and should 404
-void base_handler::get(http_request request_data) {
+void base_handler::get(http_request & request_data) {
     response.set_content(not_found_response);
     response.status = not_found_status;
 }
 
-void base_handler::post(http_request request_data) {
+void base_handler::post(http_request & request_data) {
     response.set_content(not_found_response);
     response.status = not_found_status;
 }
 
-void base_handler::put(http_request request_data) {
+void base_handler::put(http_request & request_data) {
     response.set_content(not_found_response);
     response.status = not_found_status;
 }
 
-void base_handler::options(http_request request_data) {
+void base_handler::options(http_request & request_data) {
     response.set_content(not_found_response);
     response.status = not_found_status;
 }
 
-void base_handler::delete_(http_request request_data) {
+void base_handler::delete_(http_request & request_data) {
     response.set_content(not_found_response);
     response.status = not_found_status;
 }
 
-void base_handler::head(http_request request_data) {
+void base_handler::head(http_request & request_data) {
     response.set_content(not_found_response);
     response.status = not_found_status;
 }

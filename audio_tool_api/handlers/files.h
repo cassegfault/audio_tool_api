@@ -18,18 +18,18 @@ class file_list : public serialize::json_list<file_model> {};
 
 class file_handler : public base_model_handler<file_model> {
 public:
-    void get(http_request request_data) override;
-    void post(http_request request_data) override;
+    void get(http_request & request_data) override;
+    void post(http_request & request_data) override;
 };
 
 class file_data_handler: public base_handler {
 public:
-    void get(http_request request_data) override;
+    void get(http_request & request_data) override;
 };
 
 class file_list_handler : public base_model_handler<file_list> {
 public:
-    void get(http_request request_data) override;
+    void get(http_request & request_data) override;
 };
 
 #endif /* files_hpp */

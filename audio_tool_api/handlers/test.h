@@ -17,7 +17,7 @@
 class test_handler : public base_handler {
 public:
     test_handler() { requires_authentication = false; }
-    void get(http_request request_data) override;
+    void get(http_request & request_data) override;
 };
 
 #endif /* test_hpp */
