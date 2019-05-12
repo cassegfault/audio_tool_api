@@ -23,6 +23,7 @@ void http_worker::start(shared_ptr<http_connection> _conn) {
     request_.reset();
     response.emplace();
     request_.emplace();
+    parser_.body_limit((std::numeric_limits<std::uint64_t>::max)());
     if(conn->is_raw){
         conn->build_socket(work_thread_context);
     }
@@ -31,17 +32,22 @@ void http_worker::start(shared_ptr<http_connection> _conn) {
 
 void http_worker::read(){
     //parser_.emplace(std::piecewise_construct, std::make_tuple(), std::make_tuple(alloc_));
-    http::async_read(*conn->socket, buffer_, *request_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error, 0));
+    
+    //http::async_read(*conn->socket, buffer_, *request_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error, 0));
+    http::async_read(*conn->socket, buffer_, parser_, boost::bind(&http_worker::read_handler,this, boost::asio::placeholders::error, 0));
 }
+
 void http_worker::read_handler(boost::beast::error_code & ec, size_t bytes_transferred){
     if(ec){
         LOG(ERROR) << ec.message();
         stats()->increment("read_errors");
         close_socket(ec);
     } else {
+        request_.emplace(parser_.get());
         process();
     }
 }
+
 void http_worker::process(){
     stats()->increment("requests");
     timer request_timer;

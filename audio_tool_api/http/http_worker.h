@@ -49,6 +49,7 @@ public:
 private:
     shared_ptr<http_connection> conn;
     boost::asio::io_context & work_thread_context;
+    http::request_parser<http::string_body> parser_;
     bool _has_finished = true;
     bool _has_started = false;
     

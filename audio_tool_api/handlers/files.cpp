@@ -34,7 +34,11 @@ void file_handler::post(http_request & request_data) {
 
     file_model f(data.size(), name, user.id, p.get_output_samplerate());
     f.data = data;
-    f.create(db);
+    try {
+        f.create(db);
+    } catch (runtime_error e) {
+        LOG(INFO) << e.what();
+    }
     response_data = f;
 }
 
